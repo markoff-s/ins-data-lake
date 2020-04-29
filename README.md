@@ -1,6 +1,6 @@
 ins-data-lake 
 
-Provided you have a brand new AWS account, here're the configuration steps:
+**Provided you have a brand new AWS account, here're the configuration steps:**
 
 1. configure lake formation admin - go to lake formation and make yourself (or user you're going to run the cft stack under) a data lake admin
 
