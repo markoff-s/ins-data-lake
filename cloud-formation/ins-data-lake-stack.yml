@@ -1,0 +1,2176 @@
+AWSTemplateFormatVersion: 2010-09-09
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Data Lake Storage Configuration
+        Parameters:
+          - RawZoneBucketName
+          - TransformedZoneBucketName
+          - ReportingZoneBucketName
+      - Label:
+          default: Data Lake Users Configuration
+        Parameters:
+          - DataLakeUsersAccountPassword
+      - Label:
+          default: EMR Cluster Configuration
+        Parameters:
+          - EMRClusterName
+          - KeyName
+          - MasterInstanceType
+          - MasterInstanceMarketType
+          - CoreInstanceType
+          - CoreInstanceMarketType
+          - NumberOfCoreInstances
+          - SubnetID
+          - ReleaseLabel
+      - Label:
+          default: Taging
+        Parameters:
+          - MainTag
+  'AWS::CloudFormation::Designer':
+    0a9ac2e7-9303-45d5-a871-29faa59a3bbd:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -500
+        'y': -110
+      z: 1
+      embeds: []
+    fd901adb-8e61-403c-805c-f2a7390876bc:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -410
+        'y': -30
+      z: 1
+      embeds: []
+      dependson:
+        - 0dec64bd-50a2-491b-8849-a0d526f9c4b0
+    bc244592-5c6c-430c-8386-3ff5addc87fe:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 1080
+        'y': 90
+      z: 1
+      embeds: []
+    61894fcf-e759-40ce-97cc-658d8bd35a9e:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 2550
+        'y': -50
+      z: 1
+      embeds: []
+    eab331a4-c302-47dc-b638-d815f0857992:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -620
+        'y': -150
+      z: 1
+      embeds: []
+      dependson:
+        - c943aa88-d792-4851-82a9-1d85570e253c
+    c943aa88-d792-4851-82a9-1d85570e253c:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -730
+        'y': -180
+      z: 1
+      embeds: []
+    0dec64bd-50a2-491b-8849-a0d526f9c4b0:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -600
+        'y': -10
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - 0a9ac2e7-9303-45d5-a871-29faa59a3bbd
+    64b5f0ad-62cb-4c06-bf77-3fcb664c7829:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -410
+        'y': -200
+      z: 1
+      embeds: []
+    1222be5b-4aed-4a91-a791-2b6502069c7f:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -280
+        'y': -240
+      z: 1
+      embeds: []
+    e5c51285-a027-4b45-a3bf-75fcc00ea9f2:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 460
+        'y': -330
+      z: 1
+      embeds: []
+      dependson:
+        - 2c5816b2-87a6-4ec9-9d46-b37719f006ab
+    2c5816b2-87a6-4ec9-9d46-b37719f006ab:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 600
+        'y': -300
+      z: 1
+      embeds: []
+    8bdf0e0d-35ad-4c0a-ba79-6fe18cee4446:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 630
+        'y': -410
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - 2c5816b2-87a6-4ec9-9d46-b37719f006ab
+    ff9134ad-5b6b-4427-af89-05b93e6301af:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 540
+        'y': -230
+      z: 1
+      embeds: []
+    54ca08bf-0cdc-4458-bafb-cf88751a2bdb:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 380
+        'y': -420
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - e5c51285-a027-4b45-a3bf-75fcc00ea9f2
+    05346499-9413-403f-968d-90928abdf2a5:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 2970
+        'y': 550
+      z: 1
+      embeds: []
+    1f3c3619-e834-40d7-bc67-a6cd2e103847:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 970
+        'y': 140
+      z: 1
+      embeds: []
+    67e2b736-30e8-40ff-bffb-9659d0e6b23e:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -300
+        'y': -60
+      z: 1
+      embeds: []
+    08c78e5e-2858-41cf-87a4-55aa1e5f74d0:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 2440
+        'y': 110
+      z: 1
+      embeds: []
+    606f1782-59ff-48e7-aaf9-6222456684b1:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 1110
+        'y': 220
+      z: 1
+      embeds: []
+    18dfc2a8-83d9-44b3-9f43-1ee97068459c:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -600
+        'y': 580
+      z: 1
+      embeds: []
+    5da74fd9-9bd8-4f67-a9af-aad40b8b4a49:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -320
+        'y': 900
+      z: 1
+      embeds: []
+    80fa182b-bf23-4959-9eb3-ecd1ab03f888:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 600
+        'y': 630
+      z: 1
+      embeds: []
+    f90d8824-df92-460d-a22c-571ac0481232:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 2960
+        'y': 400
+      z: 1
+      embeds: []
+    9d67a746-014d-4aa7-bace-0771facc21f3:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -720
+        'y': 680
+      z: 1
+      embeds: []
+    16bcaee9-1557-44d3-8821-6f12845fc7bf:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -290
+        'y': 780
+      z: 1
+      embeds: []
+    d6f6ca49-cee7-4ed1-b7cc-c18d56c2bdd8:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 890
+        'y': 1710
+      z: 1
+      embeds: []
+    94a511fb-5387-428a-8a18-78441701d31b:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 1180
+        'y': 1780
+      z: 1
+      embeds: []
+    0097a34e-3633-4e44-bfb3-79f1697381b0:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 1090
+        'y': 1650
+      z: 1
+      embeds: []
+    f766f9d0-2681-4387-941e-85ae35a733d5:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -410
+        'y': -310
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - c943aa88-d792-4851-82a9-1d85570e253c
+    5e742160-b472-4123-a25b-d58392a29706:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 350
+        'y': 1040
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - 1162336c-de80-4126-a343-a864cd853a13
+    5edeba10-ae9b-4af9-ae66-7fb245a0f80a:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 430
+        'y': 1100
+      z: 1
+      embeds: []
+    1162336c-de80-4126-a343-a864cd853a13:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 190
+        'y': 1070
+      z: 1
+      embeds: []
+    a9625f6b-655a-42f2-836e-5b25d56659d2:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 960
+        'y': 1150
+      z: 1
+      embeds: []
+    e5fde064-f2c9-46e3-9b06-f8c1a10b25e8:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 1750
+        'y': 1280
+      z: 1
+      embeds: []
+    8f6829f2-54b9-4af3-9af5-af96c2f025fd:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 1920
+        'y': 1250
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - e5fde064-f2c9-46e3-9b06-f8c1a10b25e8
+    f57183bc-d4ff-4de6-9f31-91b8d0553141:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 1160
+        'y': 50
+      z: 1
+      embeds: []
+    5ccaba55-ce5f-48e0-987d-fe59793e4dfa:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 1060
+        'y': 1290
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - a9625f6b-655a-42f2-836e-5b25d56659d2
+    a29a7eba-b85b-4a28-8ea3-ce617296da64:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 1960
+        'y': 1110
+      z: 1
+      embeds: []
+    b14da3c0-6a3f-4b41-ab83-4c93d8a4e61e:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 2020
+        'y': 1290
+      z: 1
+      embeds: []
+    0e00f22a-2efd-434d-b2fb-f67dd1d87c3d:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 1230
+        'y': 1140
+      z: 1
+      embeds: []
+    22fbdf29-8073-4dc8-b7b8-cc374679323e:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 1320
+        'y': 1310
+      z: 1
+      embeds: []
+    f94c8546-2ec8-4980-927e-ce2724c9a816:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 1280
+        'y': 1230
+      z: 1
+      embeds: []
+    b9005446-307a-46e6-8bf7-c3e0e7a04bf7:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 1060
+        'y': 1100
+      z: 1
+      embeds: []
+    04450775-92bb-4b88-9fe1-2bce5f55a777:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 500
+        'y': 1410
+      z: 1
+      embeds: []
+    8d7d455c-ec2d-4f13-b3a4-ead8ad3c43e8:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 580
+        'y': 1460
+      z: 1
+      embeds: []
+    c78422de-0bab-4cf6-80cf-7ea7a29153c0:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 440
+        'y': 1340
+      z: 1
+      embeds: []
+    1c3127cf-c7bc-4e96-9c72-f7e20581c432:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 340
+        'y': 910
+      z: 1
+      embeds: []
+    b267ea6a-3f5b-4239-a74f-c9dc838553f0:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 190
+        'y': 1320
+      z: 1
+      embeds: []
+    35fd9ab4-8349-41ae-914c-1db9cc51e552:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 190
+        'y': 1240
+      z: 1
+      embeds: []
+    f592bf8b-87a1-4deb-b056-e420be7c13ce:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 190
+        'y': 1160
+      z: 1
+      embeds: []
+    c3cd25ec-7464-492a-9895-0662fab72eed:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 2860
+        'y': 0
+      z: 1
+      embeds: []
+    a0c9d446-d774-4536-8a17-cb889de07260:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 2810
+        'y': 540
+      z: 1
+      embeds: []
+    6926f7f5-20e2-452b-926c-6cbbf631a935:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -550
+        'y': 870
+      z: 1
+      embeds: []
+    69c3fed8-b555-4305-af1b-7c2f6602bd7d:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -670
+        'y': 830
+      z: 1
+      embeds: []
+    cfb3235a-d3ba-40d4-86f0-c5652c7f984a:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 2840
+        'y': 350
+      z: 1
+      embeds: []
+    725af63c-6e47-4e55-9685-a1dd633c3410:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 2710
+        'y': 290
+      z: 1
+      embeds: []
+    3ce6e67d-15ae-4f8c-b036-ca4f6791b501:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 3140
+        'y': 570
+      z: 1
+      embeds: []
+    0ab46cf9-585f-46bb-9e48-49d704b72cf9:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 2510
+        'y': 470
+      z: 1
+      embeds: []
+    882a7b30-a448-4f20-abdc-bf15b104fcd1:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -400
+        'y': 710
+      z: 1
+      embeds: []
+    5546dfb3-cc35-4810-8a68-b127d1a26b3d:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -260
+        'y': 970
+      z: 1
+      embeds: []
+    df92d45a-040a-4ae8-b28a-ca8a5a9296c5:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -520
+        'y': 710
+      z: 1
+      embeds: []
+    e2aec2de-668a-4f44-a94e-7e798b2b99aa:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -430
+        'y': 860
+      z: 1
+      embeds: []
+    2e760c76-8947-495c-b845-04f6c84ace97:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 2680
+        'y': 480
+      z: 1
+      embeds: []
+Resources:
+  SubmissionsProcessingFlowTrigger:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: submissions_processing_flow_trigger
+      Code:
+        S3Bucket: ins-data-lake-public-artifacts
+        S3Key: lambdas/submissions_processing_flow_trigger.zip
+      Description: Submissions processing flow trigger
+      Handler: submissions_processing_flow_trigger.lambda_handler
+      Role: !GetAtt 
+        - SubmissionsProcessingFlowTriggerRole
+        - Arn
+      Runtime: python3.8
+      Environment:
+        Variables:
+          TRANSFORMED_ZONE_BUCKET: !Ref TransformedZoneBucketName
+          OVERNIGHT_FLOW_STEP_FUNCTION_ARN: !Ref OvernightProcessingFlowStepFunction
+          INTRADAY_FLOW_STEP_FUNCTION_ARN: !Ref IntradayProcessingFlowStepFunction
+          EMR_CLUSTER_ID: !Ref EMRCluster
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 0a9ac2e7-9303-45d5-a871-29faa59a3bbd
+  AllowRawBucketCallSubmissionsProcessingFlowTriggerPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt 
+        - SubmissionsProcessingFlowTrigger
+        - Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref 'AWS::AccountId'
+      SourceArn: !Sub 'arn:aws:s3:::${RawZoneBucketName}'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 0dec64bd-50a2-491b-8849-a0d526f9c4b0
+  RawZoneBucket:
+    Type: 'AWS::S3::Bucket'
+    DependsOn:
+      - AllowRawBucketCallSubmissionsProcessingFlowTriggerPermission
+    Properties:
+      BucketName: !Ref RawZoneBucketName
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: 's3:ObjectCreated:Put'
+            Function: !GetAtt 
+              - SubmissionsProcessingFlowTrigger
+              - Arn
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: overnight/submissions
+                  - Name: suffix
+                    Value: .csv
+          - Event: 's3:ObjectCreated:Put'
+            Function: !GetAtt 
+              - SubmissionsProcessingFlowTrigger
+              - Arn
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: intraday/submissions
+                  - Name: suffix
+                    Value: .xml
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: fd901adb-8e61-403c-805c-f2a7390876bc
+  TransformedZoneBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref TransformedZoneBucketName
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: bc244592-5c6c-430c-8386-3ff5addc87fe
+  ReportingZoneBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref ReportingZoneBucketName
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 61894fcf-e759-40ce-97cc-658d8bd35a9e
+  SubmissionsProcessingFlowTriggerRole:
+    Type: 'AWS::IAM::Role'
+    DependsOn: SubmissionsProcessingFlowTriggerManagedPolicy
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - !Ref SubmissionsProcessingFlowTriggerManagedPolicy
+        - 'arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess'
+        - 'arn:aws:iam::aws:policy/AmazonElasticMapReduceReadOnlyAccess'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: eab331a4-c302-47dc-b638-d815f0857992
+  SubmissionsProcessingFlowTriggerManagedPolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogGroup'
+            Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+            Resource: !Sub >-
+              arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda:*
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: c943aa88-d792-4851-82a9-1d85570e253c
+  StepFunctionExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - states.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: AllowToAddEMRSteps
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'elasticmapreduce:AddJobFlowSteps'
+                  - 'elasticmapreduce:DescribeStep'
+                  - 'elasticmapreduce:CancelSteps'
+                Resource:
+                  - !Sub >-
+                    arn:aws:elasticmapreduce:${AWS::Region}:${AWS::AccountId}:cluster/*
+        - PolicyName: AllowToUseXRay
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'xray:PutTraceSegments'
+                  - 'xray:PutTelemetryRecords'
+                  - 'xray:GetSamplingRules'
+                  - 'xray:GetSamplingTargets'
+                Resource:
+                  - '*'
+        - PolicyName: AllowToUseLogs
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogDelivery'
+                  - 'logs:GetLogDelivery'
+                  - 'logs:UpdateLogDelivery'
+                  - 'logs:DeleteLogDelivery'
+                  - 'logs:ListLogDeliveries'
+                  - 'logs:PutResourcePolicy'
+                  - 'logs:DescribeResourcePolicies'
+                  - 'logs:DescribeLogGroups'
+                Resource: '*'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: f766f9d0-2681-4387-941e-85ae35a733d5
+  OvernightProcessingFlowStepFunction:
+    Type: 'AWS::StepFunctions::StateMachine'
+    Properties:
+      DefinitionString: !Sub |
+        {
+          "Comment": "Overnight submissions batch proccessing flow",
+          "StartAt": "Prepare Overnight Batch Processing Job Args",
+          "States": {
+            "Prepare Overnight Batch Processing Job Args": {
+              "Type": "Pass",
+              "Parameters": {
+                "ArgsForOvernightBatchProcessingJob": {
+                  "ClusterId.$": "$.ClusterId",
+                  "Args": [
+                    {
+                      "Arg1": "spark-submit"
+                    },
+                    {
+                      "Arg2": "--conf"
+                    },
+                    {
+                      "Arg3": "spark.serializer=org.apache.spark.serializer.KryoSerializer"
+                    },
+                    {
+                      "Arg4": "--conf"
+                    },
+                    {
+                      "Arg5": "spark.sql.hive.convertMetastoreParquet=false"
+                    },
+                    {
+                      "Arg6": "--jars"
+                    },
+                    {
+                      "Arg7": "/usr/lib/hudi/hudi-spark-bundle.jar,/usr/lib/spark/external/lib/spark-avro.jar"
+                    },
+                    {
+                      "Arg8": "--class"
+                    },
+                    {
+                      "Arg9": "com.da.insurance.datalake.OvernightSubmissionsProcessor"
+                    },            
+                    {
+                      "Arg10": "s3://ins-data-lake-public-artifacts/jars/overnight-submissions-processor_2.11-0.1.jar"
+                    },
+                    {
+                      "Arg11.$": "$.PathToSourceFile"
+                    },
+                    {
+                      "Arg12.$": "$.PathToDestBucket"
+                    }
+                  ]
+                }
+              },
+              "Next": "Submit Overnight Batch Processing Job"
+            },
+            "Submit Overnight Batch Processing Job": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::elasticmapreduce:addStep.sync",
+              "Parameters": {
+                "ClusterId.$": "$.ArgsForOvernightBatchProcessingJob.ClusterId",
+                "Step": {
+                  "Name": "Overnight Submissions Batch Processing Job",
+                  "ActionOnFailure": "CONTINUE",
+                  "HadoopJarStep": {
+                    "Jar": "command-runner.jar",
+                    "Args.$": "$.ArgsForOvernightBatchProcessingJob.Args[*][*]"
+                  }
+                }
+              },
+              "ResultPath": "$.batchStepOutput",
+              "Next": "Prepare Report Generator Job Args"
+            },
+            "Prepare Report Generator Job Args": {
+              "Type": "Pass",
+              "Parameters": {
+                "ArgsForReportGeneratorJob": {
+                  "ClusterId.$": "$.ArgsForOvernightBatchProcessingJob.ClusterId",
+                  "Args": [
+                    {
+                      "Arg1": "spark-submit"
+                    },
+                    {
+                      "Arg2": "--conf"
+                    },
+                    {
+                      "Arg3": "spark.serializer=org.apache.spark.serializer.KryoSerializer"
+                    },
+                    {
+                      "Arg4": "--conf"
+                    },
+                    {
+                      "Arg5": "spark.sql.hive.convertMetastoreParquet=false"
+                    },
+                    {
+                      "Arg6": "--jars"
+                    },
+                    {
+                      "Arg7": "/usr/lib/hudi/hudi-spark-bundle.jar,/usr/lib/spark/external/lib/spark-avro.jar"
+                    },
+                    {
+                      "Arg8": "--class"
+                    },
+                    {
+                      "Arg9": "com.da.insurance.datalake.SubmissionsReportGenerator"
+                    },
+                    {
+                      "Arg10": "s3://ins-data-lake-public-artifacts/jars/submissions-report-generator_2.11-0.1.jar"
+                    },
+                    {
+                      "Arg11": "s3://${TransformedZoneBucket}/hudi_submissions/"
+                    },
+                    {
+                      "Arg12": "s3://${ReportingZoneBucket}"
+                    }
+                  ]
+                }
+              },
+              "Next": "Submit Report Generator Job"
+            },
+            "Submit Report Generator Job": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::elasticmapreduce:addStep.sync",
+              "End": true,
+              "Parameters": {
+                "ClusterId.$": "$.ArgsForReportGeneratorJob.ClusterId",
+                "Step": {
+                  "Name": "Report Generator Job",
+                  "ActionOnFailure": "CONTINUE",
+                  "HadoopJarStep": {
+                    "Jar": "command-runner.jar",
+                    "Args.$": "$.ArgsForReportGeneratorJob.Args[*][*]"
+                  }
+                }
+              }
+            }
+          }
+        }
+      RoleArn: !GetAtt 
+        - StepFunctionExecutionRole
+        - Arn
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 64b5f0ad-62cb-4c06-bf77-3fcb664c7829
+  IntradayProcessingFlowStepFunction:
+    Type: 'AWS::StepFunctions::StateMachine'
+    Properties:
+      DefinitionString: !Sub |
+        {
+          "Comment": "Intraday submissions batch proccessing flow",
+          "StartAt": "Prepare Intraday Batch Processing Job Args",
+          "States": {
+            "Prepare Intraday Batch Processing Job Args": {
+              "Type": "Pass",
+              "Comment": "https://stackoverflow.com/questions/59667195/is-there-a-way-to-get-step-functions-input-values-into-emr-step-args",
+              "Parameters": {
+                "ArgsForIntradayBatchProcessingJob": {
+                  "ClusterId.$": "$.ClusterId",
+                  "Args": [
+                    {
+                      "Arg1": "spark-submit"
+                    },
+                    {
+                      "Arg2": "--conf"
+                    },
+                    {
+                      "Arg3": "spark.serializer=org.apache.spark.serializer.KryoSerializer"
+                    },
+                    {
+                      "Arg4": "--conf"
+                    },
+                    {
+                      "Arg5": "spark.sql.hive.convertMetastoreParquet=false"
+                    },
+                    {
+                      "Arg6": "--jars"
+                    },
+                    {
+                      "Arg7": "/usr/lib/hudi/hudi-spark-bundle.jar,/usr/lib/spark/external/lib/spark-avro.jar"
+                    },
+                    {
+                      "Arg8": "--class"
+                    },
+                    {
+                      "Arg9": "com.da.insurance.datalake.IntradaySubmissionsProcessor"
+                    },            
+                    {
+                      "Arg10": "s3://ins-data-lake-public-artifacts/jars/intraday-submissions-processor_2.11-0.1.jar"
+                    },
+                    {
+                      "Arg11.$": "$.PathToSourceFile"
+                    },
+                    {
+                      "Arg12.$": "$.PathToDestBucket"
+                    }
+                  ]
+                }
+              },
+              "Next": "Submit Intraday Batch Processing Job"
+            },
+            "Submit Intraday Batch Processing Job": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::elasticmapreduce:addStep.sync",
+              "Parameters": {
+                "ClusterId.$": "$.ArgsForIntradayBatchProcessingJob.ClusterId",
+                "Step": {
+                  "Name": "Intraday Submissions Batch Processing Job",
+                  "ActionOnFailure": "CONTINUE",
+                  "HadoopJarStep": {
+                    "Jar": "command-runner.jar",
+                    "Args.$": "$.ArgsForIntradayBatchProcessingJob.Args[*][*]"
+                  }
+                }
+              },
+              "ResultPath": "$.batchStepOutput",
+              "Next": "Prepare Report Generator Job Args"
+            },
+            "Prepare Report Generator Job Args": {
+              "Type": "Pass",
+              "Comment": "https://stackoverflow.com/questions/59667195/is-there-a-way-to-get-step-functions-input-values-into-emr-step-args",
+              "Parameters": {
+                "ArgsForReportGeneratorJob": {
+                  "ClusterId.$": "$.ArgsForIntradayBatchProcessingJob.ClusterId",
+                  "Args": [
+                    {
+                      "Arg1": "spark-submit"
+                    },
+                    {
+                      "Arg2": "--conf"
+                    },
+                    {
+                      "Arg3": "spark.serializer=org.apache.spark.serializer.KryoSerializer"
+                    },
+                    {
+                      "Arg4": "--conf"
+                    },
+                    {
+                      "Arg5": "spark.sql.hive.convertMetastoreParquet=false"
+                    },
+                    {
+                      "Arg6": "--jars"
+                    },
+                    {
+                      "Arg7": "/usr/lib/hudi/hudi-spark-bundle.jar,/usr/lib/spark/external/lib/spark-avro.jar"
+                    },
+                    {
+                      "Arg8": "--class"
+                    },
+                    {
+                      "Arg9": "com.da.insurance.datalake.SubmissionsReportGenerator"
+                    },
+                    {
+                      "Arg10": "s3://ins-data-lake-public-artifacts/jars/submissions-report-generator_2.11-0.1.jar"
+                    },
+                    {
+                      "Arg11": "s3://${TransformedZoneBucket}/hudi_submissions/"
+                    },
+                    {
+                      "Arg12": "s3://${ReportingZoneBucket}"
+                    }
+                  ]
+                }
+              },
+              "Next": "Submit Report Generator Job"
+            },
+            "Submit Report Generator Job": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::elasticmapreduce:addStep.sync",
+              "End": true,
+              "Parameters": {
+                "ClusterId.$": "$.ArgsForReportGeneratorJob.ClusterId",
+                "Step": {
+                  "Name": "Report Generator Job",
+                  "ActionOnFailure": "CONTINUE",
+                  "HadoopJarStep": {
+                    "Jar": "command-runner.jar",
+                    "Args.$": "$.ArgsForReportGeneratorJob.Args[*][*]"
+                  }
+                }
+              }
+            }
+          }
+        }
+      RoleArn: !GetAtt 
+        - StepFunctionExecutionRole
+        - Arn
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 1222be5b-4aed-4a91-a791-2b6502069c7f
+  EMRCluster:
+    DependsOn:
+      - EMRClusterinstanceProfileRole
+    Type: 'AWS::EMR::Cluster'
+    Properties:
+      Applications:
+        - Name: Hadoop
+        - Name: Hive
+        - Name: Spark
+      Configurations:
+        - Classification: hive-site
+          ConfigurationProperties:
+            hive.metastore.client.factory.class: >-
+              com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory
+        - Classification: spark
+          ConfigurationProperties:
+            maximizeResourceAllocation: 'true'
+        - Classification: spark-hive-site
+          ConfigurationProperties:
+            hive.metastore.client.factory.class: >-
+              com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory
+      Instances:
+        Ec2KeyName: !Ref KeyName
+        Ec2SubnetId: !Ref SubnetID
+        MasterInstanceGroup:
+          InstanceCount: 1
+          InstanceType: !Ref MasterInstanceType
+          Market: !Ref MasterInstanceMarketType
+          Name: Master
+        CoreInstanceGroup:
+          InstanceCount: !Ref NumberOfCoreInstances
+          InstanceType: !Ref CoreInstanceType
+          Market: !Ref CoreInstanceMarketType
+          Name: Core
+        TerminationProtected: false
+      VisibleToAllUsers: true
+      JobFlowRole: !Ref EMRClusterinstanceProfile
+      ReleaseLabel: !Ref ReleaseLabel
+      LogUri: !Sub 's3://aws-logs-${AWS::AccountId}-${AWS::Region}/elasticmapreduce/'
+      Name: !Ref EMRClusterName
+      AutoScalingRole: EMR_AutoScaling_DefaultRole
+      ServiceRole: !Ref EMRClusterServiceRole
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: e5c51285-a027-4b45-a3bf-75fcc00ea9f2
+  HudiBootstrapStep:
+    Type: 'AWS::EMR::Step'
+    Properties:
+      ActionOnFailure: CANCEL_AND_WAIT
+      HadoopJarStep:
+        Args:
+          - >-
+            s3://ins-data-lake-public-artifacts/emr-hudi-bootstrap-script/emr-hudi-bootstrap.sh
+        Jar: !Sub >-
+          s3://${AWS::Region}.elasticmapreduce/libs/script-runner/script-runner.jar
+      Name: HudiBootstrap
+      JobFlowId: !Ref EMRCluster
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 54ca08bf-0cdc-4458-bafb-cf88751a2bdb
+  EMRClusterServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - elasticmapreduce.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceRole'
+      Path: /
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: ff9134ad-5b6b-4427-af89-05b93e6301af
+  EMRClusterinstanceProfileRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role'
+      Path: /
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 2c5816b2-87a6-4ec9-9d46-b37719f006ab
+  EMRClusterinstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: /
+      Roles:
+        - !Ref EMRClusterinstanceProfileRole
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 8bdf0e0d-35ad-4c0a-ba79-6fe18cee4446
+  RawZoneLakeFormationResource:
+    Type: 'AWS::LakeFormation::Resource'
+    Properties:
+      ResourceArn: !GetAtt 
+        - RawZoneBucket
+        - Arn
+      UseServiceLinkedRole: true
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 67e2b736-30e8-40ff-bffb-9659d0e6b23e
+  TransformedZoneLakeFormationResource:
+    Type: 'AWS::LakeFormation::Resource'
+    Properties:
+      ResourceArn: !GetAtt 
+        - TransformedZoneBucket
+        - Arn
+      UseServiceLinkedRole: true
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 1f3c3619-e834-40d7-bc67-a6cd2e103847
+  ReportingZoneLakeFormationResource:
+    Type: 'AWS::LakeFormation::Resource'
+    Properties:
+      ResourceArn: !GetAtt 
+        - ReportingZoneBucket
+        - Arn
+      UseServiceLinkedRole: true
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 05346499-9413-403f-968d-90928abdf2a5
+  GlueRawDatabase:
+    Type: 'AWS::Glue::Database'
+    Properties:
+      CatalogId: !Ref 'AWS::AccountId'
+      DatabaseInput:
+        Description: Glue catalog for Raw zone
+        Name: ins_data_lake_raw
+        LocationUri: !Sub 
+          - 's3://${BucketName}'
+          - BucketName: !Ref RawZoneBucket
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 18dfc2a8-83d9-44b3-9f43-1ee97068459c
+  RawOvernightSubmissionsGlueTable:
+    Type: 'AWS::Glue::Table'
+    Properties:
+      CatalogId: !Ref 'AWS::AccountId'
+      DatabaseName: !Ref GlueRawDatabase
+      TableInput:
+        Name: overnight_submissions
+        TableType: EXTERNAL_TABLE
+        Parameters:
+          classification: csv
+        StorageDescriptor:
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          Location: !Sub 's3://${RawZoneBucket}/overnight/submissions/'
+          SerdeInfo:
+            Parameters:
+              field.delim: ','
+            SerializationLibrary: org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: df92d45a-040a-4ae8-b28a-ca8a5a9296c5
+  RawIntradaySubmissionsGlueTable:
+    Type: 'AWS::Glue::Table'
+    Properties:
+      CatalogId: !Ref 'AWS::AccountId'
+      DatabaseName: !Ref GlueRawDatabase
+      TableInput:
+        Name: intraday_submissions
+        TableType: EXTERNAL_TABLE
+        Parameters:
+          classification: xml
+        StorageDescriptor:
+          Location: !Sub 's3://${RawZoneBucket}/intraday/submissions/'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 882a7b30-a448-4f20-abdc-bf15b104fcd1
+  GlueTransformedDatabase:
+    Type: 'AWS::Glue::Database'
+    Properties:
+      CatalogId: !Ref 'AWS::AccountId'
+      DatabaseInput:
+        Description: Glue catalog for Transformed zone
+        Name: ins_data_lake_transformed
+        LocationUri: !Sub 
+          - 's3://${BucketName}'
+          - BucketName: !Ref TransformedZoneBucket
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 606f1782-59ff-48e7-aaf9-6222456684b1
+  GlueReportingDatabase:
+    Type: 'AWS::Glue::Database'
+    Properties:
+      CatalogId: !Ref 'AWS::AccountId'
+      DatabaseInput:
+        Description: Glue catalog for Reporting zone
+        Name: ins_data_lake_reporting
+        LocationUri: !Sub 
+          - 's3://${BucketName}'
+          - BucketName: !Ref ReportingZoneBucket
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 08c78e5e-2858-41cf-87a4-55aa1e5f74d0
+  ReportingSubmissionsAllGlueTable:
+    Type: 'AWS::Glue::Table'
+    Properties:
+      CatalogId: !Ref 'AWS::AccountId'
+      DatabaseName: !Ref GlueReportingDatabase
+      TableInput:
+        Name: submissions_all
+        TableType: EXTERNAL_TABLE
+        Parameters:
+          classification: parquet
+        StorageDescriptor:
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          Location: !Sub 's3://${ReportingZoneBucket}/submissions_all/'
+          SerdeInfo:
+            Parameters:
+              serialization.format: 1
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 725af63c-6e47-4e55-9685-a1dd633c3410
+  ReportingSubmissionsByStateCityZipGlueTable:
+    Type: 'AWS::Glue::Table'
+    Properties:
+      CatalogId: !Ref 'AWS::AccountId'
+      DatabaseName: !Ref GlueReportingDatabase
+      TableInput:
+        Name: submissions_by_state_city_zip
+        TableType: EXTERNAL_TABLE
+        Parameters:
+          classification: parquet
+        StorageDescriptor:
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          Location: !Sub 's3://${ReportingZoneBucket}/submissions_by_state_city_zip/'
+          SerdeInfo:
+            Parameters:
+              serialization.format: 1
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: cfb3235a-d3ba-40d4-86f0-c5652c7f984a
+  TransformedZoneGlueDatabaseLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - EMRClusterinstanceProfileRole
+          - Arn
+      Resource:
+        DatabaseResource:
+          Name: !Ref GlueTransformedDatabase
+      Permissions:
+        - CREATE_TABLE
+        - ALTER
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: f57183bc-d4ff-4de6-9f31-91b8d0553141
+  GlueCrawlerRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Join 
+        - '-'
+        - - GlueCrawlerRole
+          - !Ref MainTag
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+              Service:
+                - glue.amazonaws.com
+        Version: 2012-10-17
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole'
+      Path: /
+      Policies:
+        - PolicyName: GlueS3AccessPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - 's3:GetObject'
+                  - 's3:PutObject'
+                Effect: Allow
+                Resource:
+                  - !Join 
+                    - ''
+                    - - !GetAtt 
+                        - RawZoneBucket
+                        - Arn
+                      - /*
+                  - !Join 
+                    - ''
+                    - - !GetAtt 
+                        - ReportingZoneBucket
+                        - Arn
+                      - /*
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 80fa182b-bf23-4959-9eb3-ecd1ab03f888
+  GlueCrawlerRawIntraday:
+    Type: 'AWS::Glue::Crawler'
+    Properties:
+      Role: !GetAtt 
+        - GlueCrawlerRole
+        - Arn
+      Description: This is test crawler for raw DB intraday
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: DEPRECATE_IN_DATABASE
+      TablePrefix: intraday_
+      DatabaseName: !Ref GlueRawDatabase
+      Targets:
+        S3Targets:
+          - Path: !Sub '${RawZoneBucket}/intraday/submissions'
+      Name: !Join 
+        - _
+        - - !Ref MainTag
+          - S3Crawler
+          - raw
+          - intraday
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 16bcaee9-1557-44d3-8821-6f12845fc7bf
+  GlueCrawlerRawOvernight:
+    Type: 'AWS::Glue::Crawler'
+    Properties:
+      Role: !GetAtt 
+        - GlueCrawlerRole
+        - Arn
+      Description: Raw zone overnight submissions crawler
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: DEPRECATE_IN_DATABASE
+      TablePrefix: overnight_
+      DatabaseName: !Ref GlueRawDatabase
+      Targets:
+        S3Targets:
+          - Path: !Sub '${RawZoneBucket}/overnight/submissions'
+      Name: !Join 
+        - _
+        - - !Ref MainTag
+          - S3Crawler
+          - raw
+          - overnight
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 9d67a746-014d-4aa7-bace-0771facc21f3
+  GlueCrawlerReporting:
+    Type: 'AWS::Glue::Crawler'
+    Properties:
+      Role: !GetAtt 
+        - GlueCrawlerRole
+        - Arn
+      Description: Reporting zone crawler
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: DEPRECATE_IN_DATABASE
+      DatabaseName: !Ref GlueReportingDatabase
+      Targets:
+        S3Targets:
+          - Path: !Sub '${ReportingZoneBucket}/submissions_all'
+          - Path: !Sub '${ReportingZoneBucket}/submissions_by_state_city_zip'
+      Name: !Join 
+        - _
+        - - !Ref MainTag
+          - S3Crawler
+          - reporting
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: f90d8824-df92-460d-a22c-571ac0481232
+  RawZoneGlueDatabaseLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - GlueCrawlerRole
+          - Arn
+      Resource:
+        DatabaseResource:
+          Name: !Ref GlueRawDatabase
+      Permissions:
+        - CREATE_TABLE
+        - ALTER
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 5da74fd9-9bd8-4f67-a9af-aad40b8b4a49
+  RawZoneGlueCrawlerOvernightSubmissionsTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - GlueCrawlerRole
+          - Arn
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueRawDatabase
+          Name: !Ref RawOvernightSubmissionsGlueTable
+      Permissions:
+        - ALTER
+        - INSERT
+        - DELETE
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: e2aec2de-668a-4f44-a94e-7e798b2b99aa
+  RawZoneGlueCrawlerIntradaySubmissionsTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - GlueCrawlerRole
+          - Arn
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueRawDatabase
+          Name: !Ref RawIntradaySubmissionsGlueTable
+      Permissions:
+        - ALTER
+        - INSERT
+        - DELETE
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 5546dfb3-cc35-4810-8a68-b127d1a26b3d
+  ReportingZoneGlueDatabaseLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - GlueCrawlerRole
+          - Arn
+      Resource:
+        DatabaseResource:
+          Name: !Ref GlueReportingDatabase
+      Permissions:
+        - CREATE_TABLE
+        - ALTER
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 2e760c76-8947-495c-b845-04f6c84ace97
+  ReportingZoneGlueCrawlerSubmissionsAllTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - GlueCrawlerRole
+          - Arn
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueReportingDatabase
+          Name: !Ref ReportingSubmissionsAllGlueTable
+      Permissions:
+        - ALTER
+        - INSERT
+        - DELETE
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 0ab46cf9-585f-46bb-9e48-49d704b72cf9
+  ReportingZoneGlueCrawlerSubmissionsByStateCityZipTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - GlueCrawlerRole
+          - Arn
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueReportingDatabase
+          Name: !Ref ReportingSubmissionsByStateCityZipGlueTable
+      Permissions:
+        - ALTER
+        - INSERT
+        - DELETE
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 3ce6e67d-15ae-4f8c-b036-ca4f6791b501
+  DataLakeAdminsGroup:
+    Type: 'AWS::IAM::Group'
+    Properties:
+      GroupName: data_lake_admins_group
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonAthenaFullAccess'
+        - 'arn:aws:iam::aws:policy/AWSGlueConsoleFullAccess'
+        - 'arn:aws:iam::aws:policy/CloudWatchLogsReadOnlyAccess'
+        - 'arn:aws:iam::aws:policy/AWSLakeFormationDataAdmin'
+        - 'arn:aws:iam::aws:policy/AmazonSageMakerFullAccess'
+        - 'arn:aws:iam::aws:policy/IAMUserChangePassword'
+      Policies:
+        - PolicyName: inline-data_lake_admins
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'lakeformation:*'
+                  - 'cloudtrail:DescribeTrails'
+                  - 'cloudtrail:LookupEvents'
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - 'iam:CreateServiceLinkedRole'
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    'iam:AWSServiceName': lakeformation.amazonaws.com
+              - Effect: Allow
+                Action:
+                  - 'iam:PutRolePolicy'
+                Resource: !Join 
+                  - ''
+                  - - 'arn:aws:iam::'
+                    - !Ref 'AWS::AccountId'
+                    - >-
+                      :role/aws-service-role/lakeformation.amazonaws.com/AWSServiceRoleForLakeFormationDataAccess
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 1162336c-de80-4126-a343-a864cd853a13
+  DataLakeAdminUser:
+    Type: 'AWS::IAM::User'
+    Properties:
+      UserName: data_lake_admin
+      LoginProfile:
+        Password: !Ref DataLakeUsersAccountPassword
+        PasswordResetRequired: true
+      Groups:
+        - !Ref DataLakeAdminsGroup
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 5e742160-b472-4123-a25b-d58392a29706
+  DataLakeAdminSettings:
+    Type: 'AWS::LakeFormation::DataLakeSettings'
+    Properties:
+      Admins:
+        - DataLakePrincipalIdentifier: !GetAtt 
+            - DataLakeAdminUser
+            - Arn
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 5edeba10-ae9b-4af9-ae66-7fb245a0f80a
+  DataLakeAdminRawZoneCatalogLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - DataLakeAdminUser
+          - Arn
+      Resource:
+        DatabaseResource:
+          Name: !Ref GlueRawDatabase
+      Permissions:
+        - CREATE_TABLE
+        - ALTER
+        - DROP
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: f592bf8b-87a1-4deb-b056-e420be7c13ce
+  DataLakeAdminRawZoneOvernightSubmissionsTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - DataLakeAdminUser
+          - Arn
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueRawDatabase
+          Name: !Ref RawOvernightSubmissionsGlueTable
+      Permissions:
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 35fd9ab4-8349-41ae-914c-1db9cc51e552
+  DataLakeAdminRawZoneIntradaySubmissionsTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - DataLakeAdminUser
+          - Arn
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueRawDatabase
+          Name: !Ref RawIntradaySubmissionsGlueTable
+      Permissions:
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: b267ea6a-3f5b-4239-a74f-c9dc838553f0
+  DataLakeAdminTransformedZoneCatalogLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - DataLakeAdminUser
+          - Arn
+      Resource:
+        DatabaseResource:
+          Name: !Ref GlueTransformedDatabase
+      Permissions:
+        - CREATE_TABLE
+        - ALTER
+        - DROP
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 1c3127cf-c7bc-4e96-9c72-f7e20581c432
+  DataLakeAdminReportingZoneCatalogLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - DataLakeAdminUser
+          - Arn
+      Resource:
+        DatabaseResource:
+          Name: !Ref GlueReportingDatabase
+      Permissions:
+        - CREATE_TABLE
+        - ALTER
+        - DROP
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: c78422de-0bab-4cf6-80cf-7ea7a29153c0
+  DataLakeAdminReportingZoneSubmissionsTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - DataLakeAdminUser
+          - Arn
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueReportingDatabase
+          Name: !Ref ReportingSubmissionsAllGlueTable
+      Permissions:
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 8d7d455c-ec2d-4f13-b3a4-ead8ad3c43e8
+  DataLakeAdminReportingZoneSubmissionsByStateCityZipTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - DataLakeAdminUser
+          - Arn
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueReportingDatabase
+          Name: !Ref ReportingSubmissionsByStateCityZipGlueTable
+      Permissions:
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 04450775-92bb-4b88-9fe1-2bce5f55a777
+  DataEngineersGroup:
+    Type: 'AWS::IAM::Group'
+    Properties:
+      GroupName: data_engineers_group
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonAthenaFullAccess'
+        - 'arn:aws:iam::aws:policy/AWSGlueConsoleFullAccess'
+        - 'arn:aws:iam::aws:policy/CloudWatchLogsReadOnlyAccess'
+        - 'arn:aws:iam::aws:policy/IAMUserChangePassword'
+      Policies:
+        - PolicyName: inline-data_engineers
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'lakeformation:GetDataAccess'
+                  - 'lakeformation:GrantPermissions'
+                  - 'lakeformation:RevokePermissions'
+                  - 'lakeformation:BatchGrantPermissions'
+                  - 'lakeformation:BatchRevokePermissions'
+                  - 'lakeformation:ListPermissions'
+                  - 'iam:CreateRole'
+                  - 'iam:CreatePolicy'
+                  - 'iam:AttachRolePolicy'
+                Resource: '*'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: a9625f6b-655a-42f2-836e-5b25d56659d2
+  DataEngineerUser:
+    Type: 'AWS::IAM::User'
+    Properties:
+      UserName: data_engineer
+      LoginProfile:
+        Password: !Ref DataLakeUsersAccountPassword
+        PasswordResetRequired: true
+      Groups:
+        - !Ref DataEngineersGroup
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 5ccaba55-ce5f-48e0-987d-fe59793e4dfa
+  DataEngineerTransformedZoneCatalogLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - DataEngineerUser
+          - Arn
+      Resource:
+        DatabaseResource:
+          Name: !Ref GlueTransformedDatabase
+      Permissions:
+        - CREATE_TABLE
+        - ALTER
+        - DROP
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: b9005446-307a-46e6-8bf7-c3e0e7a04bf7
+  DataEngineerReportingZoneCatalogLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - DataEngineerUser
+          - Arn
+      Resource:
+        DatabaseResource:
+          Name: !Ref GlueReportingDatabase
+      Permissions:
+        - CREATE_TABLE
+        - ALTER
+        - DROP
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: f94c8546-2ec8-4980-927e-ce2724c9a816
+  DataEngineerReportingZoneSubmissionsTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - DataEngineerUser
+          - Arn
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueReportingDatabase
+          Name: !Ref ReportingSubmissionsAllGlueTable
+      Permissions:
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 22fbdf29-8073-4dc8-b7b8-cc374679323e
+  DataEngineerReportingZoneSubmissionsByStateCityZipTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - DataEngineerUser
+          - Arn
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueReportingDatabase
+          Name: !Ref ReportingSubmissionsByStateCityZipGlueTable
+      Permissions:
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 0e00f22a-2efd-434d-b2fb-f67dd1d87c3d
+  DataAnalystsGroup:
+    Type: 'AWS::IAM::Group'
+    Properties:
+      GroupName: data_analysts_group
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AmazonAthenaFullAccess'
+        - 'arn:aws:iam::aws:policy/IAMUserChangePassword'
+      Policies:
+        - PolicyName: inline-data_analysts
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'lakeformation:GetDataAccess'
+                  - 'glue:GetTable'
+                  - 'glue:GetTables'
+                  - 'glue:SearchTables'
+                  - 'glue:GetDatabase'
+                  - 'glue:GetDatabases'
+                  - 'glue:GetPartitions'
+                Resource: '*'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: e5fde064-f2c9-46e3-9b06-f8c1a10b25e8
+  DataAnalystUser:
+    Type: 'AWS::IAM::User'
+    Properties:
+      UserName: data_analyst
+      LoginProfile:
+        Password: !Ref DataLakeUsersAccountPassword
+        PasswordResetRequired: true
+      Groups:
+        - !Ref DataAnalystsGroup
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 8f6829f2-54b9-4af3-9af5-af96c2f025fd
+  DataAnalystReportingZoneSubmissionsTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - DataAnalystUser
+          - Arn
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueReportingDatabase
+          Name: !Ref ReportingSubmissionsAllGlueTable
+      Permissions:
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: b14da3c0-6a3f-4b41-ab83-4c93d8a4e61e
+  DataAnalystReportingZoneSubmissionsByStateCityZipTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - DataAnalystUser
+          - Arn
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueReportingDatabase
+          Name: !Ref ReportingSubmissionsByStateCityZipGlueTable
+      Permissions:
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: a29a7eba-b85b-4a28-8ea3-ce617296da64
+  QuickSightServiceRawZoneOvernightSubmissionsTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !Sub >-
+          arn:aws:iam::${AWS::AccountId}:role/service-role/aws-quicksight-service-role-v0
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueRawDatabase
+          Name: !Ref RawOvernightSubmissionsGlueTable
+      Permissions:
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 69c3fed8-b555-4305-af1b-7c2f6602bd7d
+  QuickSightServiceRawZoneIntradaySubmissionsTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !Sub >-
+          arn:aws:iam::${AWS::AccountId}:role/service-role/aws-quicksight-service-role-v0
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueRawDatabase
+          Name: !Ref RawIntradaySubmissionsGlueTable
+      Permissions:
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 6926f7f5-20e2-452b-926c-6cbbf631a935
+  QuickSightServiceReportingZoneSubmissionsTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !Sub >-
+          arn:aws:iam::${AWS::AccountId}:role/service-role/aws-quicksight-service-role-v0
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueReportingDatabase
+          Name: !Ref ReportingSubmissionsAllGlueTable
+      Permissions:
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: a0c9d446-d774-4536-8a17-cb889de07260
+  QuickSightServiceReportingZoneSubmissionsByStateCityZipTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !Sub >-
+          arn:aws:iam::${AWS::AccountId}:role/service-role/aws-quicksight-service-role-v0
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueReportingDatabase
+          Name: !Ref ReportingSubmissionsByStateCityZipGlueTable
+      Permissions:
+        - SELECT
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: c3cd25ec-7464-492a-9895-0662fab72eed
+  BootstrapLambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: data_lake_bootstrap_lambda
+      Description: Performs data lake bootstrapping
+      Code:
+        ZipFile: !Sub |
+
+          import boto3
+          import cfnresponse
+
+          s3 = boto3.resource('s3')
+
+
+          def handler(event, context):
+            print('EVENT:[{}]'.format(event))
+
+            try:
+                if event['RequestType'] == 'Delete':
+                    # if delete, clean up data folders
+                    buckets_to_clean = ["${RawZoneBucket}", "${TransformedZoneBucket}", "${ReportingZoneBucket}"]
+                    for bucket_to_clean in buckets_to_clean:
+                        bucket = s3.Bucket(bucket_to_clean)
+                        objects_to_delete = []
+                        for obj in bucket.objects.filter():
+                            objects_to_delete.append({'Key': obj.key})
+
+                        bucket.delete_objects(Delete={'Objects': objects_to_delete})
+                else:
+                    # create folders for raw overnight and intraday submissions
+                    raw_bucket_name = "${RawZoneBucket}"
+                    keys = ["overnight/submissions/", "intraday/submissions/"]
+                    for key in keys:
+                        obj = s3.Object(raw_bucket_name, key)
+                        obj.put()
+
+                cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+            except Exception as e:
+                print('Exception:[{}]'.format(e))
+                cfnresponse.send(event, context, cfnresponse.FAILED, {})
+      Handler: index.handler
+      Role: !GetAtt 
+        - BootstrapLambdaFunctionRole
+        - Arn
+      Runtime: python3.7
+      Timeout: 60
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: d6f6ca49-cee7-4ed1-b7cc-c18d56c2bdd8
+  BootstrapLambdaFunctionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AWSLambdaExecute'
+      Policies:
+        - PolicyName: AllowToBootstrapAndCleanDataFolders
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:DeleteObjectVersion'
+                  - 's3:DeleteObject'
+                Resource:
+                  - 'arn:aws:s3:::*/*'
+              - Effect: Allow
+                Action:
+                  - 's3:ListBucket'
+                Resource:
+                  - 'arn:aws:s3:::*'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 0097a34e-3633-4e44-bfb3-79f1697381b0
+  BootstrapLambdaFunctionInvokeCustomResource:
+    Type: 'AWS::CloudFormation::CustomResource'
+    Version: '1.0'
+    Properties:
+      ServiceToken: !GetAtt 
+        - BootstrapLambdaFunction
+        - Arn
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 94a511fb-5387-428a-8a18-78441701d31b
+Parameters:
+  MainTag:
+    ConstraintDescription: Must be a string of upper\lower case letters only
+    Description: This tag will be used widely across all infrastructure
+    Type: String
+    Default: data_lake
+    MinLength: 3
+    MaxLength: 10
+    AllowedPattern: '^([a-zA-Z_]+){3,10}$'
+  RawZoneBucketName:
+    Type: String
+    Description: Raw zone bucket name
+    MinLength: 3
+    MaxLength: 50
+    AllowedPattern: '^([a-zA-Z-]+){3,50}$'
+  TransformedZoneBucketName:
+    Type: String
+    Description: Transformed zone bucket name
+    MinLength: 3
+    MaxLength: 50
+    AllowedPattern: '^([a-zA-Z-]+){3,50}$'
+  ReportingZoneBucketName:
+    Type: String
+    Description: Reporting zone bucket name
+    MinLength: 3
+    MaxLength: 50
+    AllowedPattern: '^([a-zA-Z-]+){3,50}$'
+  EMRClusterName:
+    Description: Name of the cluster
+    Type: String
+    Default: data_lake_emr
+    MinLength: 3
+    MaxLength: 50
+    AllowedPattern: '^([a-zA-Z-_]+){3,50}$'
+  KeyName:
+    Description: Must be an existing Keyname
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    MinLength: 1
+    MaxLength: 100
+  MasterInstanceType:
+    Description: Instance type to be used for the master instance.
+    Type: String
+    Default: r5.xlarge
+    MinLength: 3
+    MaxLength: 20
+  MasterInstanceMarketType:
+    Description: Market type used for the master instance.
+    Type: String
+    Default: SPOT
+    MinLength: 4
+    MaxLength: 10
+    AllowedValues:
+      - SPOT
+      - ON_DEMAND
+  CoreInstanceType:
+    Description: Instance type to be used for core instances.
+    Type: String
+    Default: r5.xlarge
+    MinLength: 3
+    MaxLength: 20
+  CoreInstanceMarketType:
+    Description: Market type used for core instances.
+    Type: String
+    Default: SPOT
+    MinLength: 4
+    MaxLength: 10
+    AllowedValues:
+      - SPOT
+      - ON_DEMAND
+  NumberOfCoreInstances:
+    Description: Must be a valid number
+    Type: Number
+    Default: 1
+    MinValue: 1
+    MaxValue: 10
+  SubnetID:
+    Description: Must be Valid public subnet ID
+    Type: 'AWS::EC2::Subnet::Id'
+    MinLength: 1
+    MaxLength: 50
+  ReleaseLabel:
+    Description: Must be a valid EMR release  version
+    Default: emr-5.29.0
+    Type: String
+    MinLength: 3
+    MaxLength: 20
+    AllowedPattern: '^[a-zA-Z0-9\.-]{3,20}$'
+  DataLakeUsersAccountPassword:
+    NoEcho: true
+    Description: Data lake users default account password which is reset on first login
+    Type: String
+    MinLength: 1
+    MaxLength: 30

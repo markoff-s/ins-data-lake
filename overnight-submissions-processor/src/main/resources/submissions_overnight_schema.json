@@ -1,0 +1,467 @@
+{
+    "fields": [
+        {
+            "metadata": {},
+            "name": "Submission ID",
+            "nullable": false,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Submission Status",
+            "nullable": false,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Submitted On",
+            "nullable": false,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Underwriter",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Company",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Street",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "City",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "State",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Zip",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Website",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Years at Location",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Principal Name",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Years in Business",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Nature of Operation",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Previous Carrier",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Expiry Date",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Expiring Premium",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Building Owned",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Area Occupied",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Stories",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Year Built",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Age",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Class of Construction",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Wall",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Roof",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Floor",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Roof Updated",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Wiring Updated",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Plumbing Updated",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Heating Updated",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Occupied Stories",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Adjacent North",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Adjacent South",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Adjacent East",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Adjacent West",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Fire Protection",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Fire Alarm",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Sprinklered",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Burglar Alarm",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Deadbolt Locks",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Other Protection",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Safe",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Safe Type",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Average Cash",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Maximum Cash",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Mortgagee",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Building Value",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Equipment Value",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Improvements Value",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Office Contents",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "EDP Equipment",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "EDP Data Media",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Laptops Projectors",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Customer Goods",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Others Property",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Stock Value",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Gross Earnings",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Profits",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Transit",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Employee Dishonesty",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Money Orders Securities",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Flood",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Earthquake",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Boiler",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Number of Boilers",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Boiler Maintenance Contract",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Air Conditioning",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Central Air Conditioning",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Tons",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Air Conditioning Maintenance Contract",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Automatic Backup Power",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Voltage Surge Suppression",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Claim Date",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Claim Description",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Claim Amount",
+            "nullable": true,
+            "type": "integer"
+        },
+        {
+            "metadata": {},
+            "name": "Signed Name",
+            "nullable": true,
+            "type": "string"
+        },
+        {
+            "metadata": {},
+            "name": "Title Position",
+            "nullable": true,
+            "type": "string"
+        }
+    ],
+    "type": "struct"
+}

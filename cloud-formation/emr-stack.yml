@@ -1,0 +1,226 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Best Practice EMR Cluster for Spark or S3 backed Hbase
+Parameters:
+  EMRClusterName:
+    Description: Name of the cluster
+    Type: String
+    Default: data_lake_emr
+  KeyName:
+    Description: Must be an existing Keyname
+    Type: String
+    Default: MyKP-2-us-east-1
+  MasterInstanceType:
+    Description: Instance type to be used for the master instance.
+    Type: String
+    Default: r5.xlarge
+  CoreInstanceType:
+    Description: Instance type to be used for core instances.
+    Type: String
+    Default: r5.xlarge
+  NumberOfCoreInstances:
+    Description: Must be a valid number
+    Type: Number
+    Default: 1
+  SubnetID:
+    Description: Must be Valid public subnet ID
+    Default: subnet-cadc7cc4
+    Type: String
+  LogUri:
+    Description: Must be a valid S3 URL
+    Default: 's3://aws-logs-902253451608-us-east-1/elasticmapreduce/'
+    Type: String
+  ReleaseLabel:
+    Description: Must be a valid EMR release  version
+    Default: emr-5.29.0
+    Type: String
+Mappings: {}
+Resources:
+  EMRCluster:
+    DependsOn:
+      - EMRClusterinstanceProfileRole
+    Type: 'AWS::EMR::Cluster'
+    Properties:
+      Applications:
+        - Name: Hadoop
+        - Name: Hive
+        - Name: Spark
+      Configurations:
+        - Classification: hive-site
+          ConfigurationProperties:
+            hive.metastore.client.factory.class: >-
+              com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory
+        - Classification: spark-hive-site
+          ConfigurationProperties:
+            hive.metastore.client.factory.class: >-
+              com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory
+      Instances:
+        Ec2KeyName: !Ref KeyName
+        Ec2SubnetId: !Ref SubnetID
+        MasterInstanceGroup:
+          InstanceCount: 1
+          InstanceType: !Ref MasterInstanceType
+          Market: SPOT
+          Name: Master
+        CoreInstanceGroup:
+          InstanceCount: !Ref NumberOfCoreInstances
+          InstanceType: !Ref CoreInstanceType
+          Market: SPOT
+          Name: Core
+        TerminationProtected: false
+      VisibleToAllUsers: true
+      JobFlowRole: !Ref EMRClusterinstanceProfile
+      ReleaseLabel: !Ref ReleaseLabel
+      LogUri: !Ref LogUri
+      Name: !Ref EMRClusterName
+      AutoScalingRole: EMR_AutoScaling_DefaultRole
+      ServiceRole: !Ref EMRClusterServiceRole
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: e5c51285-a027-4b45-a3bf-75fcc00ea9f2
+  HudiBootstrapStep:
+    Type: 'AWS::EMR::Step'
+    Properties:
+      ActionOnFailure: CANCEL_AND_WAIT
+      HadoopJarStep:
+        Args:
+          - >-
+            s3://ins-data-lake-public-artifacts/emr-hudi-bootstrap-script/emr-hudi-bootstrap.sh
+        Jar: !Sub >-
+          s3://${AWS::Region}.elasticmapreduce/libs/script-runner/script-runner.jar
+      Name: HudiBootstrap
+      JobFlowId: !Ref EMRCluster
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 54ca08bf-0cdc-4458-bafb-cf88751a2bdb
+  EMRClusterServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - elasticmapreduce.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceRole'
+      Path: /
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: ff9134ad-5b6b-4427-af89-05b93e6301af
+  EMRClusterinstanceProfileRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role'
+      Path: /
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 2c5816b2-87a6-4ec9-9d46-b37719f006ab
+  EMRClusterinstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: /
+      Roles:
+        - !Ref EMRClusterinstanceProfileRole
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 8bdf0e0d-35ad-4c0a-ba79-6fe18cee4446
+  LakeFormationRawZoneResource:
+    Type: 'AWS::LakeFormation::Resource'
+    Properties:
+      ResourceArn: !GetAtt S3Bucket.Arn
+      UseServiceLinkedRole: true
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 6759d6e6-0080-4078-9c37-01bdb0e377ff
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: ins-dl-test-vmarkov
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 83e7e77d-6bec-421f-8290-cf72bae3d66f
+Outputs: {}
+Metadata:
+  'AWS::CloudFormation::Designer':
+    e5c51285-a027-4b45-a3bf-75fcc00ea9f2:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 360
+        'y': 150
+      z: 1
+      embeds: []
+      dependson:
+        - 2c5816b2-87a6-4ec9-9d46-b37719f006ab
+    2c5816b2-87a6-4ec9-9d46-b37719f006ab:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 210
+        'y': 150
+      z: 1
+      embeds: []
+    ff9134ad-5b6b-4427-af89-05b93e6301af:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 570
+        'y': 210
+      z: 1
+      embeds: []
+    8bdf0e0d-35ad-4c0a-ba79-6fe18cee4446:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 60
+        'y': 90
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - 2c5816b2-87a6-4ec9-9d46-b37719f006ab
+    54ca08bf-0cdc-4458-bafb-cf88751a2bdb:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 570
+        'y': 90
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - e5c51285-a027-4b45-a3bf-75fcc00ea9f2
+    6759d6e6-0080-4078-9c37-01bdb0e377ff:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -200
+        'y': 120
+      z: 1
+      embeds: []
+    83e7e77d-6bec-421f-8290-cf72bae3d66f:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -100
+        'y': 210
+      z: 1
+      embeds: []
