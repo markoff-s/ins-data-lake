@@ -4,7 +4,7 @@ Provided you have a brand new AWS account, here're the configuration steps:
 
 1. configure lake formation admin - go to lake formation and make yourself (or user you're going to run the cft stack under) a data lake admin
 
-1. configure QuickSight - go to QS and setup an account with Athena access (this will create a QS role that is used in the cft template)
+1. configure QuickSight - go to QS and setup an account with Athena access, this will create a QS role that is used in the cft template (this will be improved so that this role is created as part of the stack)
 
 1. launch cft stack from cloud-formation/ins-data-lake-stack.yml or https://ins-data-lake-public-artifacts.s3.amazonaws.com/cloud-formation/ins-data-lake-stack.yml
 
