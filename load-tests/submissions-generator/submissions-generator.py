@@ -33,7 +33,7 @@ def nocommas(dirtystring):
 
 # Change locations to use real addresses. This is a large file, so we won't use dataframes.
 # source_locations = pd.read_csv("locations.csv")
-source_locations = open('C:\\Users\\marko\\Downloads\\big-data-sets\\NAD_r3_revised_ASCII\\NAD_r3.txt')
+source_locations = open('C:\\temp\\big-data-sets\\NAD_r3_revised_ASCII\\NAD_r3.txt')
 source_locations_size = source_locations.seek(0, 2)
 source_locations_header_size = 403  # The header line is 403 bytes. Skip this.
 
