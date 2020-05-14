@@ -3,23 +3,23 @@ import csv
 import math
 # import datetime
 
-import numpy as np, numpy.random
+# import numpy as np, numpy.random
 import pandas as pd
 
-from random import randint
+# from random import randint
 from faker import Faker
-from numpy import array
+# from numpy import array
 
 from datetime import datetime, date, timedelta
 
 # from dateutil.relativedelta import relativedelta
-from dateutil.relativedelta import *
+# from dateutil.relativedelta import *
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
 fake = Faker()
 
-number_of_applications = 1000000
+number_of_applications = 10000
 first_submission = 1000
 
 
@@ -33,7 +33,7 @@ def nocommas(dirtystring):
 
 # Change locations to use real addresses. This is a large file, so we won't use dataframes.
 # source_locations = pd.read_csv("locations.csv")
-source_locations = open('NAD_r3.txt')
+source_locations = open('C:\\Users\\marko\\Downloads\\big-data-sets\\NAD_r3_revised_ASCII\\NAD_r3.txt')
 source_locations_size = source_locations.seek(0, 2)
 source_locations_header_size = 403  # The header line is 403 bytes. Skip this.
 

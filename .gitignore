@@ -8,6 +8,8 @@ out
 
 *.zip
 
+/load-tests/submissions-generator/*.csv
+
 # python
 venv
 __pycache__
