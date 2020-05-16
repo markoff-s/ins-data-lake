@@ -565,7 +565,7 @@ blank_90 = [.1, .9]
 
 print("Generating Insurance Applications ...")
 
-with open("submissions.csv", 'w') as csvfile:
+with open("submissions.csv", 'w', newline='') as csvfile:
     App_Data = csv.DictWriter(csvfile, fieldnames=output_columns)
     App_Data.writeheader()
 
