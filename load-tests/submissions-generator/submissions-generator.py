@@ -84,9 +84,9 @@ source_locations_columns = {
 }
 
 output_columns = [
-    "submissionid",
-    "submissionstatus",
-    "submittedon",
+    "submission_id",
+    "submission_status",
+    "submitted_on",
     "underwriter",
     "organization",
     "street",
@@ -94,74 +94,154 @@ output_columns = [
     "state",
     "zip",
     "website",
-    "yearsatlocation",
-    "principalname",
-    "yearsinbusiness",
-    "natureofoperation",
-    "previouscarrier",
-    "expirydate",
-    "expiringpremium",
-    "buildingowned",
-    "areaoccupied",
+    "years_at_location",
+    "principal_name",
+    "years_in_business",
+    "nature_of_operation",
+    "previous_carrier",
+    "expiry_date",
+    "expiring_premium",
+    "building_owned",
+    "area_occupied",
     "stories",
-    "yearbuilt",
+    "year_built",
     "age",
-    "classofconstruction",
+    "class_of_construction",
     "wall",
     "roof",
     "floor",
-    "roofupdated",
-    "wiringupdated",
-    "plumbingupdated",
-    "heatingupdated",
-    "occupiedstories",
-    "adjacentnorth",
-    "adjacentsouth",
-    "adjacenteast",
-    "adjacentwest",
-    "fireprotection",
-    "firealarm",
+    "roof_updated",
+    "wiring_updated",
+    "plumbing_updated",
+    "heating_updated",
+    "occupied_stories",
+    "adjacent_north",
+    "adjacent_south",
+    "adjacent_east",
+    "adjacent_west",
+    "fire_protection",
+    "fire_alarm",
     "sprinklered",
-    "burglaralarm",
-    "deadboltlocks",
-    "otherprotection",
+    "burglar_alarm",
+    "deadbolt_locks",
+    "other_protection",
     "safe",
-    "safetype",
-    "averagecash",
-    "maximumcash",
+    "safe_type",
+    "average_cash",
+    "maximum_cash",
     "mortgagee",
-    "buildingvalue",
-    "equipmentvalue",
-    "improvementsvalue",
-    "officecontents",
-    "edpequipment",
-    "edpdatamedia",
-    "laptopsprojectors",
-    "customergoods",
-    "othersproperty",
-    "stockvalue",
-    "grossearnings",
+    "building_value",
+    "equipment_value",
+    "improvements_value",
+    "office_contents",
+    "edp_equipment",
+    "edp_data_media",
+    "laptops_projectors",
+    "customer_goods",
+    "others_property",
+    "stock_value",
+    "gross_earnings",
     "profits",
     "transit",
-    "employeedishonesty",
-    "moneyorderssecurities",
+    "employee_dishonesty",
+    "money_orders_securities",
     "flood",
     "earthquake",
     "boiler",
-    "numberofboilers",
-    "boilermaintenancecontract",
-    "airconditioning",
-    "centralairconditioning",
+    "number_of_boilers",
+    "boiler_maintenance_contract",
+    "air_conditioning",
+    "central_air_conditioning",
     "tons",
-    "airconditioningmaintenancecontract",
-    "automaticbackuppower",
-    "voltagesurgesuppression",
-    "claimdate",
-    "claimdescription",
-    "claimamount",
-    "signedname",
-    "titleposition"
+    "air_conditioning_maintenance_contract",
+    "automatic_backup_power",
+    "voltage_surge_suppression",
+    "claim_date",
+    "claim_description",
+    "claim_amount",
+    "signed_name",
+    "title_position"
 ]
+
+# output_columns = [
+#     "Submission ID",
+#     "Submission Status",
+#     "Submitted On",
+#     "Underwriter",
+#     "Company",
+#     "Street",
+#     "City",
+#     "State",
+#     "Zip",
+#     "Website",
+#     "Years at Location",
+#     "Principal Name",
+#     "Years in Business",
+#     "Nature of Operation",
+#     "Previous Carrier",
+#     "Expiry Date",
+#     "Expiring Premium",
+#     "Building Owned",
+#     "Area Occupied",
+#     "Stories",
+#     "Year Built",
+#     "Age",
+#     "Class of Construction",
+#     "Wall",
+#     "Roof",
+#     "Floor",
+#     "Roof Updated",
+#     "Wiring Updated",
+#     "Plumbing Updated",
+#     "Heating Updated",
+#     "Occupied Stories",
+#     "Adjacent North",
+#     "Adjacent South",
+#     "Adjacent East",
+#     "Adjacent West",
+#     "Fire Protection",
+#     "Fire Alarm",
+#     "Sprinklered",
+#     "Burglar Alarm",
+#     "Deadbolt Locks",
+#     "Other Protection",
+#     "Safe",
+#     "Safe Type",
+#     "Average Cash",
+#     "Maximum Cash",
+#     "Mortgagee",
+#     "Building Value",
+#     "Equipment Value",
+#     "Improvements Value",
+#     "Office Contents",
+#     "EDP Equipment",
+#     "EDP Data Media",
+#     "Laptops Projectors",
+#     "Customer Goods",
+#     "Others Property",
+#     "Stock Value",
+#     "Gross Earnings",
+#     "Profits",
+#     "Transit",
+#     "Employee Dishonesty",
+#     "Money Orders Securities",
+#     "Flood",
+#     "Earthquake",
+#     "Boiler",
+#     "Number of Boilers",
+#     "Boiler Maintenance Contract",
+#     "Air Conditioning",
+#     "Central Air Conditioning",
+#     "Tons",
+#     "Air Conditioning Maintenance Contract",
+#     "Automatic Backup Power",
+#     "Voltage Surge Suppression",
+#     "Claim Date",
+#     "Claim Description",
+#     "Claim Amount",
+#     "Signed Name",
+#     "Title Position"
+# ]
 
 nature_of_operation = [
     "Accounting & Auditing Services",
@@ -614,9 +694,9 @@ with open("submissions.csv", 'w', newline='') as csvfile:
         ]
 
         # NEW FIELDS
-        new_application["submissionid"] = first_submission + t
-        new_application["submissionstatus"] = 'open'
-        new_application["submittedon"] = ''
+        new_application["submission_id"] = first_submission + t
+        new_application["submission_status"] = 'open'
+        new_application["submitted_on"] = application_date
         new_application["underwriter"] = ''
 
         # 1. APPLICANT INFORMATION
@@ -626,116 +706,116 @@ with open("submissions.csv", 'w', newline='') as csvfile:
         new_application["state"] = location[source_locations_columns.get("State")]
         new_application["zip"] = zipcode
         new_application["website"] = fake.url(schemes=None)
-        new_application["yearsatlocation"] = random.randint(1, 20)
-        new_application["principalname"] = fake.name()
-        new_application["yearsinbusiness"] = random.randint(1, 50)
-        new_application["natureofoperation"] = random.choice(nature_of_operation)
-        new_application["previouscarrier"] = random.choice(carriers)
-        new_application["expirydate"] = fake.date_time_between_dates(datetime_start=application_date,
+        new_application["years_at_location"] = random.randint(1, 20)
+        new_application["principal_name"] = fake.name()
+        new_application["years_in_business"] = random.randint(1, 50)
+        new_application["nature_of_operation"] = random.choice(nature_of_operation)
+        new_application["previous_carrier"] = random.choice(carriers)
+        new_application["expiry_date"] = fake.date_time_between_dates(datetime_start=application_date,
                                                                      datetime_end=application_date + timedelta(days=90),
                                                                      tzinfo=None).strftime("%m/%d/%y")
-        new_application["expiringpremium"] = round(random.randint(1000, 50000), -2)
+        new_application["expiring_premium"] = round(random.randint(1000, 50000), -2)
 
         # 2. LOCATION INFORMATION (COMPLETE FOR EACH LOCATION COVERED)
         # new_application["Location Same"] = random.choice(choices)
         # new_application["Location Other"] = ""
         # if new_application["Location Same"] == "No":
         #  new_application["Location Other"] = fake.address()
-        new_application["buildingowned"] = random.choice(choices)
-        new_application["areaoccupied"] = str(random.randint(2, 20) * 5) + "%"
+        new_application["building_owned"] = random.choice(choices)
+        new_application["area_occupied"] = str(random.randint(2, 20) * 5) + "%"
         new_application["stories"] = random.randint(1, 20)
-        new_application["yearbuilt"] = date_built.year
+        new_application["year_built"] = date_built.year
         new_application["age"] = math.floor((application_date - date_built).days / 365.25)
-        new_application["classofconstruction"] = construction_class
+        new_application["class_of_construction"] = construction_class
         new_application["wall"] = random.choice(walls.get(construction_class))
         new_application["roof"] = random.choice(roofs.get(construction_class))
         new_application["floor"] = random.choice(floors.get(construction_class))
-        new_application["roofupdated"] = fake.date_time_between(start_date=date_built, end_date=application_date,
+        new_application["roof_updated"] = fake.date_time_between(start_date=date_built, end_date=application_date,
                                                                 tzinfo=None).year
-        new_application["wiringupdated"] = fake.date_time_between(start_date=date_built, end_date=application_date,
+        new_application["wiring_updated"] = fake.date_time_between(start_date=date_built, end_date=application_date,
                                                                   tzinfo=None).year
-        new_application["plumbingupdated"] = fake.date_time_between(start_date=date_built, end_date=application_date,
+        new_application["plumbing_updated"] = fake.date_time_between(start_date=date_built, end_date=application_date,
                                                                     tzinfo=None).year
-        new_application["heatingupdated"] = fake.date_time_between(start_date=date_built, end_date=application_date,
+        new_application["heating_updated"] = fake.date_time_between(start_date=date_built, end_date=application_date,
                                                                    tzinfo=None).year
-        new_application["occupiedstories"] = random.randint(1, new_application["stories"])
+        new_application["occupied_stories"] = random.randint(1, new_application["stories"])
         # new_application["occupied space"] = new_application["occupied stories"] * random.randint(1000, 30000)
-        new_application["adjacentnorth"] = random.choice(adjacent_exposures)
-        new_application["adjacentsouth"] = random.choice(adjacent_exposures)
-        new_application["adjacenteast"] = random.choice(adjacent_exposures)
-        new_application["adjacentwest"] = random.choice(adjacent_exposures)
-        new_application["fireprotection"] = random.choice(firepro)
-        new_application["firealarm"] = random.choice(alarm)
+        new_application["adjacent_north"] = random.choice(adjacent_exposures)
+        new_application["adjacent_south"] = random.choice(adjacent_exposures)
+        new_application["adjacent_east"] = random.choice(adjacent_exposures)
+        new_application["adjacent_west"] = random.choice(adjacent_exposures)
+        new_application["fire_protection"] = random.choice(firepro)
+        new_application["fire_alarm"] = random.choice(alarm)
         new_application["sprinklered"] = str(random.randint(0, 20) * 5) + "%"
-        new_application["burglaralarm"] = random.choice(alarm)
-        new_application["deadboltlocks"] = random.choice(choices)
-        new_application["otherprotection"] = ""
-        if new_application["deadboltlocks"] == "no":
-            new_application["otherprotection"] = random.choice(locks)
+        new_application["burglar_alarm"] = random.choice(alarm)
+        new_application["deadbolt_locks"] = random.choice(choices)
+        new_application["other_protection"] = ""
+        if new_application["deadbolt_locks"] == "no":
+            new_application["other_protection"] = random.choice(locks)
         new_application["safe"] = random.choice(choices)
-        new_application["safetype"] = ""
+        new_application["safe_type"] = ""
         if new_application["safe"] == "yes":
-            new_application["safetype"] = random.choice(safes)
-        new_application["averagecash"] = 0
-        new_application["maximumcash"] = 0
+            new_application["safe_type"] = random.choice(safes)
+        new_application["average_cash"] = 0
+        new_application["maximum_cash"] = 0
         if random.choices(optional_values, blank_40)[0]:
-            new_application["averagecash"] = round(random.randint(1000, 20000), -3)
-            new_application["maximumcash"] = round(random.randint(new_application["averagecash"], 100000), -3)
+            new_application["average_cash"] = round(random.randint(1000, 20000), -3)
+            new_application["maximum_cash"] = round(random.randint(new_application["average_cash"], 100000), -3)
         # new_application["loss payee"] = new_application["principal name"] + " " + new_application["address"]
         new_application["mortgagee"] = ''
         if random.choices(optional_values, blank_20)[0]:
             new_application["mortgagee"] = nocommas(fake.company())
 
         # 3. coverages, limits & notes
-        new_application["buildingvalue"] = round(random.randint(10000, 1000000), -3)
+        new_application["building_value"] = round(random.randint(10000, 1000000), -3)
         # new_application["building value location 2"] = random.randint(0, 1000000)
         # new_application["building value location 3"] = random.randint(0, 1000000)
-        new_application["equipmentvalue"] = 0
+        new_application["equipment_value"] = 0
         if random.choices(optional_values, blank_30)[0]:
-            new_application["equipmentvalue"] = round(random.randint(10000, 1000000), -3)
+            new_application["equipment_value"] = round(random.randint(10000, 1000000), -3)
         # new_application["equipment value location 2"] = random.randint(0, 1000000)
         # new_application["equipment value location 3"] = random.randint(0, 1000000)
-        new_application["improvementsvalue"] = 0
+        new_application["improvements_value"] = 0
         if random.choices(optional_values, blank_40)[0]:
-            new_application["improvementsvalue"] = round(random.randint(10000, 1000000), -3)
+            new_application["improvements_value"] = round(random.randint(10000, 1000000), -3)
         # new_application["improvements value location 2"] = random.randint(0, 1000000)
         # new_application["improvements value location 3"] = random.randint(0, 1000000)
-        new_application["officecontents"] = 0
+        new_application["office_contents"] = 0
         if random.choices(optional_values, blank_10)[0]:
-            new_application["officecontents"] = round(random.randint(10000, 1000000), -3)
+            new_application["office_contents"] = round(random.randint(10000, 1000000), -3)
         # new_application["office contents location 2"] = random.randint(0, 1000000)
         # new_application["office contents location 3"] = random.randint(0, 1000000)
-        new_application["edpequipment"] = 0
+        new_application["edp_equipment"] = 0
         if random.choices(optional_values, blank_30)[0]:
-            new_application["edpequipment"] = round(random.randint(10000, 1000000), -3)
+            new_application["edp_equipment"] = round(random.randint(10000, 1000000), -3)
         # new_application["edp equipment location 2"] = random.randint(0, 1000000)
         # new_application["edp equipment location 3"] = random.randint(0, 1000000)
-        new_application["edpdatamedia"] = 0
+        new_application["edp_data_media"] = 0
         if random.choices(optional_values, blank_30)[0]:
-            new_application["edpdatamedia"] = round(random.randint(10000, 1000000), -3)
+            new_application["edp_data_media"] = round(random.randint(10000, 1000000), -3)
         # new_application["edp data media location 2"] = random.randint(0, 1000000)
         # new_application["edp data media location 3"] = random.randint(0, 1000000)
-        new_application["laptopsprojectors"] = 0
+        new_application["laptops_projectors"] = 0
         if random.choices(optional_values, blank_30)[0]:
-            new_application["laptopsprojectors"] = round(random.randint(10000, 1000000), -3)
+            new_application["laptops_projectors"] = round(random.randint(10000, 1000000), -3)
         # new_application["laptops projectors location 2"] = random.randint(0, 1000000)
         # new_application["laptops projectors location 3"] = random.randint(0, 1000000)
-        new_application["customergoods"] = 0
+        new_application["customer_goods"] = 0
         if random.choices(optional_values, blank_30)[0]:
-            new_application["customergoods"] = round(random.randint(10000, 1000000), -3)
+            new_application["customer_goods"] = round(random.randint(10000, 1000000), -3)
         # new_application["customer goods location 2"] = random.randint(0, 1000000)
         # new_application["customer goods location 3"] = random.randint(0, 1000000)
-        new_application["othersproperty"] = 0
+        new_application["others_property"] = 0
         if random.choices(optional_values, blank_50)[0]:
-            new_application["othersproperty"] = round(random.randint(10000, 1000000), -3)
+            new_application["others_property"] = round(random.randint(10000, 1000000), -3)
         # new_application["others property location 2"] = random.randint(0, 1000000)
         # new_application["others property location 3"] = random.randint(0, 1000000)
-        new_application["stockvalue"] = 0
+        new_application["stock_value"] = 0
         if random.choices(optional_values, blank_30)[0]:
-            new_application["stockvalue"] = round(random.randint(10000, 1000000), -3)
+            new_application["stock_value"] = round(random.randint(10000, 1000000), -3)
         # new_application["stock value location 2"] = random.randint(0, 1000000)
         # new_application["stock value location 3"] = random.randint(0, 1000000)
-        new_application["grossearnings"] = round(random.randint(10000, 1000000), -3)
+        new_application["gross_earnings"] = round(random.randint(10000, 1000000), -3)
         # new_application["gross earnings location 2"] = random.randint(0, 1000000)
         # new_application["gross earnings location 3"] = random.randint(0, 1000000)
         new_application["profits"] = round(random.randint(10000, 1000000), -3)
@@ -746,14 +826,14 @@ with open("submissions.csv", 'w', newline='') as csvfile:
             new_application["transit"] = round(random.randint(10000, 1000000), -3)
         # new_application["transit location 2"] = random.randint(0, 1000000)
         # new_application["transit location 3"] = random.randint(0, 1000000)
-        new_application["employeedishonesty"] = 0
+        new_application["employee_dishonesty"] = 0
         if random.choices(optional_values, blank_90)[0]:
-            new_application["employeedishonesty"] = round(random.randint(10000, 1000000), -3)
+            new_application["employee_dishonesty"] = round(random.randint(10000, 1000000), -3)
         # new_application["employee dishonesty location 2"] = random.randint(0, 1000000)
         # new_application["employee dishonesty location 3"] = random.randint(0, 1000000)
-        new_application["moneyorderssecurities"] = 0
+        new_application["money_orders_securities"] = 0
         if random.choices(optional_values, blank_90)[0]:
-            new_application["moneyorderssecurities"] = round(random.randint(10000, 1000000), -3)
+            new_application["money_orders_securities"] = round(random.randint(10000, 1000000), -3)
         # new_application["money orders securities location 2"] = random.randint(0, 1000000)
         # new_application["money orders securities location 3"] = random.randint(0, 1000000)
         new_application["flood"] = random.choices(choices, blank_90)[0]
@@ -761,22 +841,22 @@ with open("submissions.csv", 'w', newline='') as csvfile:
 
         # 4. boiler and machinery (equipment breakdown) if required
         new_application["boiler"] = random.choice(boiler_types)
-        new_application["numberofboilers"] = 1
+        new_application["number_of_boilers"] = 1
         if random.choices(optional_values, blank_90)[0]:
-            new_application["numberofboilers"] = random.randint(2, 6)
-        new_application["boilermaintenancecontract"] = random.choice(choices)
+            new_application["number_of_boilers"] = random.randint(2, 6)
+        new_application["boiler_maintenance_contract"] = random.choice(choices)
         if new_application["boiler"] == "none":
-            new_application["numberofboilers"] = 0
-            new_application["boilermaintenancecontract"] = "no"
-        new_application["airconditioning"] = random.choice(choices)
-        new_application["centralairconditioning"] = random.choice(choices)
+            new_application["number_of_boilers"] = 0
+            new_application["boiler_maintenance_contract"] = "no"
+        new_application["air_conditioning"] = random.choice(choices)
+        new_application["central_air_conditioning"] = random.choice(choices)
         new_application["tons"] = random.randint(3, 20)
-        new_application["airconditioningmaintenancecontract"] = random.choice(choices)
+        new_application["air_conditioning_maintenance_contract"] = random.choice(choices)
         # new_application["number of compressors"] = random.randint(1, 10)
-        if new_application["airconditioning"] == "no":
-            new_application["centralairconditioning"] = "no"
+        if new_application["air_conditioning"] == "no":
+            new_application["central_air_conditioning"] = "no"
             new_application["tons"] = 0
-            new_application["airconditioningmaintenancecontract"] = "no"
+            new_application["air_conditioning_maintenance_contract"] = "no"
         #  new_application["number of compressors"] = 0
         # new_application["pressure vessels"] = random.choice(choices)
         # new_application["over 24 inches"] = random.choice(choices)
@@ -787,27 +867,27 @@ with open("submissions.csv", 'w', newline='') as csvfile:
         #  new_application["number of pressure vessels"] = 0
         #  new_application["pressure vessel maintenance contract"] = "no"
         # new_application["temperature sensitive monitor"] = random.choice(choices)
-        new_application["automaticbackuppower"] = random.choice(choices)
-        new_application["voltagesurgesuppression"] = random.choice(surge_types)
+        new_application["automatic_backup_power"] = random.choice(choices)
+        new_application["voltage_surge_suppression"] = random.choice(surge_types)
         # new_application["specialty equipment"] = random.choice(equipment_types)
         # new_application["speciailty equipment replacement time"] = str(random.randint(95, 400)) + " days"
 
         # 5. claim information / all property & boiler and machinery
-        new_application["claimdate"] = fake.date_time_between(start_date="-5y", end_date=application_date,
+        new_application["claim_date"] = fake.date_time_between(start_date="-5y", end_date=application_date,
                                                               tzinfo=None).strftime("%m/%d/%y")
-        new_application["claimdescription"] = random.choice(claim_types)
+        new_application["claim_description"] = random.choice(claim_types)
         claim_amount = round(random.randint(1000, 200000), -3)
-        new_application["claimamount"] = claim_amount
+        new_application["claim_amount"] = claim_amount
 
         if random.choices(optional_values, blank_90)[0]:
-            new_application["claimdescription"] = new_application[
-                                                      "claimdescription"] + " loss estimated at " + f"${claim_amount:d}"
+            new_application["claim_description"] = new_application[
+                                                      "claim_description"] + " loss estimated at " + f"${claim_amount:d}"
 
         # 6. notice concerning personal information
 
         # 7. warranty statement
-        new_application["signedname"] = new_application["principalname"]
-        new_application["titleposition"] = nocommas(fake.job())
+        new_application["signed_name"] = new_application["principal_name"]
+        new_application["title_position"] = nocommas(fake.job())
 
         App_Data.writerow(new_application)
 
