@@ -19,10 +19,6 @@ pd.options.mode.chained_assignment = None  # default='warn'
 
 fake = Faker()
 
-number_of_applications = 10000
-first_submission = 1000
-
-
 def coalesce(*arg): return next((a for a in arg if a is not None), None)
 
 
@@ -645,6 +641,8 @@ blank_90 = [.1, .9]
 
 print("Generating Insurance Applications ...")
 
+number_of_applications = 30000
+first_submission = 4000
 with open("submissions.csv", 'w', newline='') as csvfile:
     App_Data = csv.DictWriter(csvfile, fieldnames=output_columns)
     App_Data.writeheader()
@@ -654,7 +652,7 @@ with open("submissions.csv", 'w', newline='') as csvfile:
         # COMMERCIAL PROPERTY INSURANCE APPLICATION
         new_application = {}
 
-        application_date = fake.date_time_between(start_date='-5y', end_date='now', tzinfo=None)
+        application_date = fake.date_time_between(start_date='-2M', end_date='now', tzinfo=None)
         date_built = fake.date_time_between(start_date='-70y', end_date='-10y', tzinfo=None)
         # location = source_locations.sample(1).to_dict("records")[0]
         construction_class = random.choice(construction_classes)
