@@ -10,9 +10,13 @@ scalaVersion := "2.11.12"
 libraryDependencies += "org.apache.spark" %% "spark-core" % "2.4.4"
 // https://mvnrepository.com/artifact/org.apache.spark/spark-sql
 libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.4.4"
+// xml
+libraryDependencies += "com.databricks" %% "spark-xml" % "0.9.0"
+
 
 // hudi
 // https://mvnrepository.com/artifact/org.apache.hudi/hudi-spark-bundle
 libraryDependencies += "org.apache.hudi" %% "hudi-spark-bundle" % "0.5.1-incubating"
 // https://mvnrepository.com/artifact/org.apache.spark/spark-avro
 libraryDependencies += "org.apache.spark" %% "spark-avro" % "2.4.4"
+
