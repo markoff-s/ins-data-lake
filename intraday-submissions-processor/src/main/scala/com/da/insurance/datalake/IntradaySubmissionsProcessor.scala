@@ -6,6 +6,8 @@ import org.apache.spark.sql.functions.{col, current_timestamp, lit, regexp_repla
 import org.apache.spark.sql.types.{DataType, IntegerType, StringType, StructType}
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 
+import scala.util.Try
+
 object IntradaySubmissionsProcessor {
 
   // hudi config
@@ -14,19 +16,32 @@ object IntradaySubmissionsProcessor {
   val hudiTableRecordKey = "submission_id"
   val hudiTablePartitionColumn = "submitted_on"
   val hudiTablePrecombineKey = "timestamp"
+  var hudiSyncToHive = true
 
   def main(args: Array[String]): Unit = {
 
     val pathToSource: String = args(0)
     val pathToDestination: String = args(1)
 
+    var isLocalRun: Boolean = false
+    if (args.length > 2) isLocalRun = Try(args(2).toBoolean).getOrElse(false)
+    hudiSyncToHive = !isLocalRun
+
     var spark: SparkSession = null
     try {
-      spark = SparkSession
+
+      var sessionBuilder = SparkSession
         .builder()
         .appName("IntradaySubmissionsProcessor")
-        //        .master("local[*]")
-        .getOrCreate()
+        .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+        .config("spark.sql.hive.convertMetastoreParquet", "false")
+
+      if (isLocalRun)
+        sessionBuilder = sessionBuilder
+          .master("local[*]")
+          .config("spark.driver.host", "localhost")
+
+      spark =  sessionBuilder.getOrCreate()
 
       val sourceData = spark
         .read
@@ -46,7 +61,7 @@ object IntradaySubmissionsProcessor {
       val subStatus = row(1)
       val subDate = row(2)
       val city = row(3)
-      val company = row(4)
+      val organization = row(4)
       val state = row(5)
       val street = row(6)
       val zip = row(7)
@@ -63,7 +78,7 @@ object IntradaySubmissionsProcessor {
         .withColumn("submission_status", lit(subStatus).cast(StringType))
         .withColumn("submitted_on", lit(subDate).cast(StringType))
         .withColumn("city", lit(city).cast(StringType))
-        .withColumn("company", lit(company).cast(StringType))
+        .withColumn("organization", lit(organization).cast(StringType))
         .withColumn("state", lit(state).cast(StringType))
         .withColumn("street", lit(street).cast(StringType))
         .withColumn("zip", lit(zip).cast(IntegerType))
@@ -104,7 +119,7 @@ object IntradaySubmissionsProcessor {
       DataSourceWriteOptions.PARTITIONPATH_FIELD_OPT_KEY -> hudiTablePartitionColumn,
 
       //For this data set, we specify that we want to sync metadata with Hive.
-      DataSourceWriteOptions.HIVE_SYNC_ENABLED_OPT_KEY -> "true",
+      DataSourceWriteOptions.HIVE_SYNC_ENABLED_OPT_KEY -> hudiSyncToHive.toString,
       DataSourceWriteOptions.HIVE_DATABASE_OPT_KEY -> hudiDbName,
       DataSourceWriteOptions.HIVE_TABLE_OPT_KEY -> hudiTableName,
       DataSourceWriteOptions.HIVE_PARTITION_FIELDS_OPT_KEY -> hudiTablePartitionColumn
