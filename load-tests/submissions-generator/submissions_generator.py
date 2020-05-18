@@ -641,8 +641,8 @@ blank_90 = [.1, .9]
 
 print("Generating Insurance Applications ...")
 
-number_of_applications = 30000
-first_submission = 4000
+number_of_applications = 100000
+first_submission = 5000
 with open("submissions.csv", 'w', newline='') as csvfile:
     App_Data = csv.DictWriter(csvfile, fieldnames=output_columns)
     App_Data.writeheader()
