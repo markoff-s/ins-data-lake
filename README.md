@@ -9,9 +9,9 @@ ins-data-lake
 1. launch cft stack from cloud-formation/ins-data-lake-stack.yml or https://ins-data-lake-public-artifacts.s3.amazonaws.com/cloud-formation/ins-data-lake-stack.yml
 
 1. data load
-   1. overnight data - drop https://ins-data-lake-public-artifacts.s3.amazonaws.com/test_data/step1-SubmissionsOvernightFeed.csv to "overnight/submissions/" folder in your raw/bronze zone bucket
+   1. overnight data - drop https://ins-data-lake-public-artifacts.s3.amazonaws.com/test-data/overnight-submissions/overnight_submissions_new_business_sub_id_1001_cnt_10k_10d_from_now.csv to "overnight/submissions/" folder in your raw/bronze zone bucket
    1. watch EMR or Step Functions to complete processing
-   1. intraday data - drop https://ins-data-lake-public-artifacts.s3.amazonaws.com/test_data/step2-assign-undewriter-change-status.xml to "intraday/submissions/" folder in your raw/bronze zone bucket
+   1. intraday data - drop https://ins-data-lake-public-artifacts.s3.amazonaws.com/test-data/step2-assign-undewriter-change-status.xml to "intraday/submissions/" folder in your raw/bronze zone bucket
    1. watch EMR or Step Functions to complete processing
    1. run intraday, overnight and reporting Glue crawlers created by the CFN stack
 
