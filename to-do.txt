@@ -1,0 +1,2 @@
+- change S3 lambda trigger to fire on ALL create events (currently only firing on PUT, fails on big files when multi-part upload is used)
+- change lambda trigger to allow write to cloudwatch events (currently it doesn't have access)
