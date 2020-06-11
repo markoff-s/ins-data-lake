@@ -1,21 +1,20 @@
 package com.da.insurance.datalake.security
 
-import org.apache.spark.sql.functions.{col, lit, udf}
+import org.apache.spark.sql.functions.{col, expr, lit, udf}
 import org.apache.spark.sql.{SaveMode, SparkSession}
 
 import scala.util.Try
 
 object OvernightSubmissionsTokenizer {
 
-  //  val pathToSchema = "submissions_overnight_schema.json"
-
   def main(args: Array[String]): Unit = {
 
     val pathToSource: String = args(0)
     val pathToDestination: String = args(1)
+    val pathToTokenMap: String = args(2)
 
     var isLocalRun: Boolean = false
-    if (args.length > 2) isLocalRun = Try(args(2).toBoolean).getOrElse(false)
+    if (args.length > 3) isLocalRun = Try(args(3).toBoolean).getOrElse(false)
 
     var spark: SparkSession = null
     try {
@@ -30,28 +29,31 @@ object OvernightSubmissionsTokenizer {
 
       spark = sessionBuilder.getOrCreate()
 
-      //      val schemaFromJson = loadSchema(pathToSchema)
-
-      val getMaskedValueUdf = udf(getMaskedValue(_:String, _: Int):String)
+      val getMaskedValueUdf = udf(getMaskedValue(_: String, _: Int): String)
       val sourceData = spark
         .read
         .format("csv")
         .option("header", "true")
         .option("inferSchema", "true")
-        //        .schema(schemaFromJson)
         .load(pathToSource)
-//        .withColumn("underwriter", lit("").cast(StringType))
         .withColumn("masked_zip_4_chars", getMaskedValueUdf(col("zip"), lit(4)))
         .withColumn("masked_zip_2_chars", getMaskedValueUdf(col("zip"), lit(2)))
-
-      //        .drop("submitted_on")
-      //.cache()
+        .withColumn("zip_token", expr("uuid()"))
 
       Console.printf("# of partitions in source data = %d", sourceData.rdd.partitions.size)
       Console.println()
 
-
+      // save the token map
       sourceData
+        .select("zip_token", "zip")
+        .write
+        .format("parquet")
+        .mode(SaveMode.Overwrite) // overwrite for now - it's easier to test
+        .save(pathToTokenMap)
+
+      // save masked source data w/o PII data
+      sourceData
+        .drop("zip")
         .coalesce(1) // save as one file for now
         //        .repartition(3)
         .write
