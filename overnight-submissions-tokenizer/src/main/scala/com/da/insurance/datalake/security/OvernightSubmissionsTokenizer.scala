@@ -9,9 +9,7 @@ object OvernightSubmissionsTokenizer {
 
   def main(args: Array[String]): Unit = {
 
-    val pathToSource: String = args(0)
-    val pathToDestination: String = args(1)
-    val pathToTokenMap: String = args(2)
+    val (pathToSource: String, pathToDestination: String, pathToTokenMap: String) = ValidateInputArgs(args)
 
     var isLocalRun: Boolean = false
     if (args.length > 3) isLocalRun = Try(args(3).toBoolean).getOrElse(false)
@@ -68,6 +66,22 @@ object OvernightSubmissionsTokenizer {
         spark.stop()
       }
     }
+  }
+
+  private def ValidateInputArgs(args: Array[String]) = {
+    val pathToSource: String = args(0)
+    if (pathToSource == null || pathToSource.isEmpty)
+      throw new IllegalArgumentException("Path to source is null or empty")
+
+    val pathToDestination: String = args(1)
+    if (pathToDestination == null || pathToDestination.isEmpty)
+      throw new IllegalArgumentException("Path to destination is null or empty")
+
+    val pathToTokenMap: String = args(2)
+    if (pathToTokenMap == null || pathToTokenMap.isEmpty)
+      throw new IllegalArgumentException("Path to token map is null or empty")
+
+    (pathToSource, pathToDestination, pathToTokenMap)
   }
 
   private def getMaskedValue(text: String, numCharsToKeep: Int): String = {
