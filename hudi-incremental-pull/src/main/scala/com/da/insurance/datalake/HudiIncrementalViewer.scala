@@ -45,7 +45,9 @@ object HudiIncrementalViewer {
       val hoodieIncViewDF = spark.read
         .format("org.apache.hudi")
         .option(DataSourceReadOptions.VIEW_TYPE_OPT_KEY, DataSourceReadOptions.VIEW_TYPE_INCREMENTAL_OPT_VAL)
-        .option(DataSourceReadOptions.BEGIN_INSTANTTIME_OPT_KEY, "20200617080000") //20200617083404
+        .option(DataSourceReadOptions.BEGIN_INSTANTTIME_OPT_KEY, "20200617192912") // Commits: 1) 20200617192912 2) 20200617193246
+
+        //        .option(DataSourceReadOptions.END_INSTANTTIME_OPT_KEY, "20200617193246")
         .load(pathToSource); // For incremental view, pass in the root/base path of dataset
 
       hoodieIncViewDF
@@ -54,8 +56,25 @@ object HudiIncrementalViewer {
         .mode(SaveMode.Append)
         .format("csv")
         .option("header", "true")
-
         .save(pathToDestination)
+
+
+//      val hoodieIncViewDF = spark.read
+//        .format("org.apache.hudi")
+//        .load(pathToSource + "/*/*/*/*")
+
+      /*hoodieIncViewDF
+        .select("_hoodie_commit_time", "_hoodie_record_key", "_hoodie_partition_path",
+          "_hoodie_file_name", "submission_id", "submission_status")
+        .distinct()
+        .coalesce(1)
+        .write
+        .mode(SaveMode.Append)
+        .format("csv")
+        .option("header", "true")
+        .save(pathToDestination)
+*/
+      //      spark.sql("select distinct(_hoodie_commit_time) as commitTime from  hudi_ro_table order by commitTime").map(k => k.getString(0)).take(50)
 
     }
     finally {
