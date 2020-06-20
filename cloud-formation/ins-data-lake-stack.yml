@@ -5,6 +5,7 @@ Metadata:
       - Label:
           default: Data Lake Storage Configuration
         Parameters:
+          - QuarantineZoneBucketName
           - RawZoneBucketName
           - TransformedZoneBucketName
           - ReportingZoneBucketName
@@ -639,7 +640,7 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 0a9ac2e7-9303-45d5-a871-29faa59a3bbd
-  AllowRawBucketCallSubmissionsProcessingFlowTriggerPermission:
+  AllowQuarantineBucketCallSubmissionsProcessingFlowTriggerPermission:
     Type: 'AWS::Lambda::Permission'
     Properties:
       FunctionName: !GetAtt 
@@ -648,16 +649,16 @@ Resources:
       Action: 'lambda:InvokeFunction'
       Principal: s3.amazonaws.com
       SourceAccount: !Ref 'AWS::AccountId'
-      SourceArn: !Sub 'arn:aws:s3:::${RawZoneBucketName}'
+      SourceArn: !Sub 'arn:aws:s3:::${QuarantineZoneBucketName}'
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 0dec64bd-50a2-491b-8849-a0d526f9c4b0
-  RawZoneBucket:
+  QuarantineZoneBucket:
     Type: 'AWS::S3::Bucket'
     DependsOn:
-      - AllowRawBucketCallSubmissionsProcessingFlowTriggerPermission
+      - AllowQuarantineBucketCallSubmissionsProcessingFlowTriggerPermission
     Properties:
-      BucketName: !Ref RawZoneBucketName
+      BucketName: !Ref QuarantineZoneBucketName
       NotificationConfiguration:
         LambdaConfigurations:
           - Event: 's3:ObjectCreated:Put'
@@ -682,6 +683,10 @@ Resources:
                     Value: intraday/submissions
                   - Name: suffix
                     Value: .xml
+  RawZoneBucket:
+    Type: 'AWS::S3::Bucket'    
+    Properties:
+      BucketName: !Ref RawZoneBucketName      
     Metadata:
       'AWS::CloudFormation::Designer':
         id: fd901adb-8e61-403c-805c-f2a7390876bc
@@ -2090,6 +2095,12 @@ Parameters:
     MinLength: 3
     MaxLength: 10
     AllowedPattern: '^([a-zA-Z_]+){3,10}$'
+  QuarantineZoneBucketName:
+    Type: String
+    Description: Quarantine zone bucket name
+    MinLength: 3
+    MaxLength: 50
+    AllowedPattern: '^([a-zA-Z-]+){3,50}$'
   RawZoneBucketName:
     Type: String
     Description: Raw zone bucket name
