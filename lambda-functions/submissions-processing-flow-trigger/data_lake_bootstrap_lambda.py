@@ -10,21 +10,32 @@ def handler(event, context):
     try:
         if event['RequestType'] == 'Delete':
             # if delete, clean up data folders
-            buckets_to_clean = ["${RawZoneBucket}", "${TransformedZoneBucket}", "${ReportingZoneBucket}"]
+            print('Cleaning up buckets...')
+            buckets_to_clean = ["quarantine-vmarkov-xzxzxz", "bronze-vmarkov-xzxzxz",
+                                "silver-vmarkov-xzxzxz", "gold-vmarkov-xzxzxz"]
             for bucket_to_clean in buckets_to_clean:
                 bucket = s3.Bucket(bucket_to_clean)
                 objects_to_delete = []
                 for obj in bucket.objects.filter():
                     objects_to_delete.append({'Key': obj.key})
 
-                bucket.delete_objects(Delete={'Objects': objects_to_delete})
+                try:
+                    # this method throws an exception if the bucket is empty
+                    bucket.delete_objects(
+                        Delete={'Objects': objects_to_delete})
+                except Exception as e:
+                    print('Exception on cleaning up bucket "{}" :[{}]'.format(
+                        bucket.name, e))
         else:
             # create folders for raw overnight and intraday submissions
-            raw_bucket_name = "${RawZoneBucket}"
+            print('Initializing buckets...')
+            buckets_to_init = [
+                "quarantine-vmarkov-xzxzxz", "bronze-vmarkov-xzxzxz"]
             keys = ["overnight/submissions/", "intraday/submissions/"]
-            for key in keys:
-                obj = s3.Object(raw_bucket_name, key)
-                obj.put()
+            for bucket in buckets_to_init:
+                for key in keys:
+                    obj = s3.Object(bucket, key)
+                    obj.put()
 
         cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
     except Exception as e:
