@@ -914,7 +914,7 @@ Resources:
                       "Arg10": "s3://ins-data-lake-public-artifacts/jars/overnight-submissions-processor_2.11-0.1.jar"
                     },
                     {
-                      "Arg11.$": "$.ArgsForTokenizerBatchProcessingJob.PathToSourceFile"
+                      "Arg11.$": "$.ArgsForTokenizerBatchProcessingJob.PathToRawZoneBucket"
                     },
                     {
                       "Arg12.$": "$.ArgsForTokenizerBatchProcessingJob.PathToTransformedZoneBucket"
