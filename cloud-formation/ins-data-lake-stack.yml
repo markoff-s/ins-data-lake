@@ -7,6 +7,7 @@ Metadata:
         Parameters:
           - QuarantineZoneBucketName
           - RawZoneBucketName
+          - TokenMapBucketName
           - TransformedZoneBucketName
           - ReportingZoneBucketName
       - Label:
@@ -634,6 +635,7 @@ Resources:
       Environment:
         Variables:
           RAW_ZONE_BUCKET: !Ref RawZoneBucketName
+          TOKEN_MAP_BUCKET: !Ref TokenMapBucketName
           TRANSFORMED_ZONE_BUCKET: !Ref TransformedZoneBucketName
           OVERNIGHT_FLOW_STEP_FUNCTION_ARN: !Ref OvernightProcessingFlowStepFunction
           INTRADAY_FLOW_STEP_FUNCTION_ARN: !Ref IntradayProcessingFlowStepFunction
@@ -687,10 +689,14 @@ Resources:
   RawZoneBucket:
     Type: 'AWS::S3::Bucket'    
     Properties:
-      BucketName: !Ref RawZoneBucketName      
+      BucketName: !Ref RawZoneBucketName
     Metadata:
       'AWS::CloudFormation::Designer':
         id: fd901adb-8e61-403c-805c-f2a7390876bc
+  TokenMapBucket:
+    Type: 'AWS::S3::Bucket'    
+    Properties:
+      BucketName: !Ref TokenMapBucketName
   TransformedZoneBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
@@ -807,13 +813,75 @@ Resources:
       DefinitionString: !Sub |
         {
           "Comment": "Overnight submissions batch proccessing flow",
-          "StartAt": "Prepare Overnight Batch Processing Job Args",
+          "StartAt": "Prepare Tokenizer Batch Processing Job Args",
           "States": {
+             
+             "Prepare Tokenizer Batch Processing Job Args": {
+              "Type": "Pass",
+              "Parameters": {
+                "ArgsForTokenizerBatchProcessingJob": {
+                  "ClusterId.$": "$.ClusterId",
+                  "PathToSourceFile.$": "$.PathToSourceFile",
+                  "PathToRawZoneBucket.$": "$.PathToRawZoneBucket",
+                  "PathToTransformedZoneBucket.$": "$.PathToTransformedZoneBucket",
+                  "PathToTokenMapBucket.$": "$.PathToTokenMapBucket",
+                  "Args": [
+                    {
+                      "Arg1": "spark-submit"
+                    },                        
+                    {
+                      "Arg2": "--class"
+                    },
+                    {
+                      "Arg3": "com.da.insurance.datalake.security.OvernightSubmissionsTokenizer"
+                    },            
+                    {
+                      "Arg4": "s3://ins-data-lake-public-artifacts/jars/overnight-submissions-tokenizer_2.11-0.1.jar"
+                    },
+                    {
+                      "Arg5.$": "$.PathToSourceFile"
+                    },
+                    {
+                      "Arg6.$": "$.PathToRawZoneBucket"
+                    },
+                    {
+                      "Arg7.$": "$.PathToTokenMapBucket"
+                    }
+                  ]
+                }
+              },
+              "Next": "Submit Tokenizer Batch Processing Job"
+            },
+
+
+            "Submit Tokenizer Batch Processing Job": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::elasticmapreduce:addStep.sync",
+              "Parameters": {
+                "ClusterId.$": "$.ArgsForTokenizerBatchProcessingJob.ClusterId",                
+                "Step": {
+                  "Name": "Tokenizer Batch Processing Job",
+                  "ActionOnFailure": "CONTINUE",
+                  "HadoopJarStep": {
+                    "Jar": "command-runner.jar",
+                    "Args.$": "$.ArgsForTokenizerBatchProcessingJob.Args[*][*]"
+                  }
+                }
+              },
+              "ResultPath": "$.batchStepOutput",
+              "Next": "Prepare Overnight Batch Processing Job Args"
+            },
+
+
             "Prepare Overnight Batch Processing Job Args": {
               "Type": "Pass",
               "Parameters": {
                 "ArgsForOvernightBatchProcessingJob": {
-                  "ClusterId.$": "$.ClusterId",
+                  "ClusterId.$": "$.ArgsForTokenizerBatchProcessingJob.ClusterId",
+                  "PathToSourceFile.$": "$.ArgsForTokenizerBatchProcessingJob.PathToSourceFile",
+                  "PathToRawZoneBucket.$": "$.ArgsForTokenizerBatchProcessingJob.PathToRawZoneBucket",
+                  "PathToTransformedZoneBucket.$": "$.ArgsForTokenizerBatchProcessingJob.PathToTransformedZoneBucket",
+                  "PathToTokenMapBucket.$": "$.ArgsForTokenizerBatchProcessingJob.PathToTokenMapBucket",
                   "Args": [
                     {
                       "Arg1": "spark-submit"
@@ -846,10 +914,10 @@ Resources:
                       "Arg10": "s3://ins-data-lake-public-artifacts/jars/overnight-submissions-processor_2.11-0.1.jar"
                     },
                     {
-                      "Arg11.$": "$.PathToSourceFile"
+                      "Arg11.$": "$.ArgsForTokenizerBatchProcessingJob.PathToSourceFile"
                     },
                     {
-                      "Arg12.$": "$.PathToDestBucket"
+                      "Arg12.$": "$.ArgsForTokenizerBatchProcessingJob.PathToTransformedZoneBucket"
                     }
                   ]
                 }
@@ -860,7 +928,7 @@ Resources:
               "Type": "Task",
               "Resource": "arn:aws:states:::elasticmapreduce:addStep.sync",
               "Parameters": {
-                "ClusterId.$": "$.ArgsForOvernightBatchProcessingJob.ClusterId",
+                "ClusterId.$": "$.ArgsForOvernightBatchProcessingJob.ClusterId",                
                 "Step": {
                   "Name": "Overnight Submissions Batch Processing Job",
                   "ActionOnFailure": "CONTINUE",
@@ -878,6 +946,10 @@ Resources:
               "Parameters": {
                 "ArgsForReportGeneratorJob": {
                   "ClusterId.$": "$.ArgsForOvernightBatchProcessingJob.ClusterId",
+                  "PathToSourceFile.$": "$.ArgsForOvernightBatchProcessingJob.PathToSourceFile",
+                  "PathToRawZoneBucket.$": "$.ArgsForOvernightBatchProcessingJob.PathToRawZoneBucket",
+                  "PathToTransformedZoneBucket.$": "$.ArgsForOvernightBatchProcessingJob.PathToTransformedZoneBucket",
+                  "PathToTokenMapBucket.$": "$.ArgsForOvernightBatchProcessingJob.PathToTokenMapBucket",
                   "Args": [
                     {
                       "Arg1": "spark-submit"
@@ -993,7 +1065,7 @@ Resources:
                       "Arg11.$": "$.PathToSourceFile"
                     },
                     {
-                      "Arg12.$": "$.PathToDestBucket"
+                      "Arg12.$": "$.PathToTransformedZoneBucket"
                     }
                   ]
                 }
@@ -2112,6 +2184,12 @@ Parameters:
   RawZoneBucketName:
     Type: String
     Description: Raw zone bucket name
+    MinLength: 3
+    MaxLength: 50
+    AllowedPattern: '^([a-zA-Z-]+){3,50}$'
+  TokenMapBucketName:
+    Type: String
+    Description: Token map bucket name
     MinLength: 3
     MaxLength: 50
     AllowedPattern: '^([a-zA-Z-]+){3,50}$'
