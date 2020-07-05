@@ -11,8 +11,7 @@ def handler(event, context):
         if event['RequestType'] == 'Delete':
             # if delete, clean up data folders
             print('Cleaning up buckets...')
-            buckets_to_clean = ["quarantine-vmarkov-xzxzxz", "bronze-vmarkov-xzxzxz",
-                                "silver-vmarkov-xzxzxz", "gold-vmarkov-xzxzxz"]
+            buckets_to_clean = ["${QuarantineZoneBucket}", "${RawZoneBucket}", "${TransformedZoneBucket}", "${ReportingZoneBucket}"]
             for bucket_to_clean in buckets_to_clean:
                 bucket = s3.Bucket(bucket_to_clean)
                 objects_to_delete = []
@@ -29,8 +28,7 @@ def handler(event, context):
         else:
             # create folders for raw overnight and intraday submissions
             print('Initializing buckets...')
-            buckets_to_init = [
-                "quarantine-vmarkov-xzxzxz", "bronze-vmarkov-xzxzxz"]
+            buckets_to_init = ["${QuarantineZoneBucket}", "${RawZoneBucket}"]
             keys = ["overnight/submissions/", "intraday/submissions/"]
             for bucket in buckets_to_init:
                 for key in keys:
