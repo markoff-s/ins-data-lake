@@ -28,19 +28,27 @@ def lambda_handler(event, context):
     intraday_flow_step_function_arn, \
     emr_cluster_id = get_params()
 
-    timestamp = datetime.now().strftime("%m_%d_%Y__%H_%M_%S")
-    path_to_raw_zone_bucket = "s3://" + raw_zone_bucket + "/" + timestamp + "/"
+    timestamp = datetime.now().strftime("%m_%d_%Y__%H_%M_%S")    
     path_to_transformed_zone_bucket = "s3://" + transformed_zone_bucket + "/"
-    path_to_token_map_bucket = "s3://" + token_map_bucket + "/" + timestamp + "/"
+    path_to_token_map_bucket = "s3://" + token_map_bucket + "/" + "zip-token-map" + "/"
 
     for record in event['Records']:
         bucket = record['s3']['bucket']['name']
         key = record['s3']['object']['key']
         path_to_source_file = "s3://" + bucket + "/" + key
 
-        step_function_arn = overnight_flow_step_function_arn \
+        is_overnight = True \
             if key.endswith(".csv") \
+            else False
+        
+        step_function_arn = overnight_flow_step_function_arn \
+            if is_overnight \
             else intraday_flow_step_function_arn
+
+        raw_zone_sub_folder = "overnight" \
+            if is_overnight \
+            else "intraday"
+        path_to_raw_zone_bucket = f"s3://{raw_zone_bucket}/{raw_zone_sub_folder}/submissions/{timestamp}/"
 
         step_function_params = f'{{ "ClusterId": "{emr_cluster_id}", ' \
                                f'"PathToSourceFile": "{path_to_source_file}", ' \
