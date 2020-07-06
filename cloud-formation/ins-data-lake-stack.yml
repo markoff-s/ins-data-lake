@@ -1296,6 +1296,16 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 05346499-9413-403f-968d-90928abdf2a5
+  GlueTokenMapDatabase:
+    Type: 'AWS::Glue::Database'
+    Properties:
+      CatalogId: !Ref 'AWS::AccountId'
+      DatabaseInput:
+        Description: Glue catalog for token map
+        Name: ins_data_lake_token_map
+        LocationUri: !Sub 
+          - 's3://${BucketName}'
+          - BucketName: !Ref TokenMapBucket    
   GlueRawDatabase:
     Type: 'AWS::Glue::Database'
     Properties:
@@ -1461,6 +1471,12 @@ Resources:
                   - !Join 
                     - ''
                     - - !GetAtt 
+                        - TokenMapBucket
+                        - Arn
+                      - /*
+                  - !Join 
+                    - ''
+                    - - !GetAtt 
                         - RawZoneBucket
                         - Arn
                       - /*
@@ -1473,13 +1489,33 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 80fa182b-bf23-4959-9eb3-ecd1ab03f888
+  GlueCrawlerTokenMap:
+    Type: 'AWS::Glue::Crawler'
+    Properties:
+      Role: !GetAtt 
+        - GlueCrawlerRole
+        - Arn
+      Description: Token map crawler
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: DEPRECATE_IN_DATABASE      
+      DatabaseName: !Ref GlueTokenMapDatabase
+      Targets:
+        S3Targets:
+          - Path: !Sub '${TokenMapBucket}/'
+      Name: !Join
+        - _
+        - - !Ref MainTag
+          - S3Crawler
+          - token
+          - map    
   GlueCrawlerRawIntraday:
     Type: 'AWS::Glue::Crawler'
     Properties:
       Role: !GetAtt 
         - GlueCrawlerRole
         - Arn
-      Description: This is test crawler for raw DB intraday
+      Description: Raw zone intraday submissions crawler
       SchemaChangePolicy:
         UpdateBehavior: UPDATE_IN_DATABASE
         DeleteBehavior: DEPRECATE_IN_DATABASE
