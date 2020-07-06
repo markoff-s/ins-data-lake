@@ -7,6 +7,7 @@ target
 out
 
 *.zip
+.vscode
 
 /load-tests/submissions-generator/*.csv
 
