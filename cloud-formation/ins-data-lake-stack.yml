@@ -1306,6 +1306,24 @@ Resources:
         LocationUri: !Sub 
           - 's3://${BucketName}'
           - BucketName: !Ref TokenMapBucket    
+  ZipTokenMapGlueTable:
+    Type: 'AWS::Glue::Table'
+    Properties:
+      CatalogId: !Ref 'AWS::AccountId'
+      DatabaseName: !Ref GlueTokenMapDatabase
+      TableInput:
+        Name: zip_token_map
+        TableType: EXTERNAL_TABLE
+        Parameters:
+          classification: parquet
+        StorageDescriptor:
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          Location: !Sub 's3://${TokenMapBucket}/zip-token-map/'
+          SerdeInfo:
+            Parameters:
+              serialization.format: '1'
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
   GlueRawDatabase:
     Type: 'AWS::Glue::Database'
     Properties:
@@ -1502,7 +1520,7 @@ Resources:
       DatabaseName: !Ref GlueTokenMapDatabase
       Targets:
         S3Targets:
-          - Path: !Sub '${TokenMapBucket}/'
+          - Path: !Sub '${TokenMapBucket}/zip-token-map'
       Name: !Join
         - _
         - - !Ref MainTag
@@ -1580,6 +1598,35 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: f90d8824-df92-460d-a22c-571ac0481232
+  TokenMapGlueDatabaseLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - GlueCrawlerRole
+          - Arn
+      Resource:
+        DatabaseResource:
+          Name: !Ref GlueTokenMapDatabase
+      Permissions:
+        - CREATE_TABLE
+        - ALTER    
+  TokenMapGlueCrawlerZipTokenMapTableLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - GlueCrawlerRole
+          - Arn
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueTokenMapDatabase
+          Name: !Ref ZipTokenMapGlueTable
+      Permissions:
+        - ALTER
+        - INSERT
+        - DELETE
+        - SELECT    
   RawZoneGlueDatabaseLakeFormationPermission:
     Type: 'AWS::LakeFormation::Permissions'
     Properties:
