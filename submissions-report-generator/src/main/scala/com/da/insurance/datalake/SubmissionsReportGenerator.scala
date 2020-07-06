@@ -3,7 +3,7 @@ package com.da.insurance.datalake
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 
-object  SubmissionsReportGenerator {
+object SubmissionsReportGenerator {
 
   val hudiTableName = "hudi_submissions"
 
@@ -38,13 +38,11 @@ object  SubmissionsReportGenerator {
       // write submissions-by-state report
       submissionsDf
         .filter(col("state").isNotNull)
-        .groupBy(col("state"), col("city"), col("masked_zip_4_chars"),
-          col("masked_zip_2_chars"))
+        .groupBy(col("state"), col("city"), col("zip"))
         .agg(
           count("submission_id").as("submissions_count")
         )
-        .orderBy(col("state"), col("city"), col("masked_zip_4_chars"),
-          col("masked_zip_2_chars"))
+        .orderBy(col("state"), col("city"), col("zip"))
         .write
         .format("parquet")
         .mode("overwrite")

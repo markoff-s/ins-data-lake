@@ -46,7 +46,7 @@ object OvernightSubmissionsTokenizer {
         .select("zip_token", "zip")
         .write
         .format("parquet")
-        .mode(SaveMode.Append) // overwrite for now - it's easier to test
+        .mode(SaveMode.Overwrite) // overwrite for now - it's easier to test
         .save(pathToTokenMap)
 
       // save masked source data w/o PII data
@@ -57,7 +57,7 @@ object OvernightSubmissionsTokenizer {
         .write
         .format("csv")
         .option("header", "true")
-        .mode(SaveMode.Append) // overwrite for now - it's easier to test
+        .mode(SaveMode.Overwrite) // overwrite for now - it's easier to test
         .save(pathToDestination)
 
     }
