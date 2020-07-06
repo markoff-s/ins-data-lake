@@ -2151,7 +2151,10 @@ Resources:
         id: c3cd25ec-7464-492a-9895-0662fab72eed
   BootstrapLambdaFunction:
     Type: 'AWS::Lambda::Function'
-    Properties:
+    DependsOn:
+      - QuarantineZoneBucket
+      - RawZoneBucket
+    Properties:      
       FunctionName: data_lake_bootstrap_lambda
       Description: Performs data lake bootstrapping
       Code:
@@ -2170,7 +2173,7 @@ Resources:
               if event['RequestType'] == 'Delete':
                 # if delete, clean up data folders
                 print('Cleaning up buckets...')
-                buckets_to_clean = ["${TokenMapBucket}", ${QuarantineZoneBucket}", "${RawZoneBucket}", "${TransformedZoneBucket}", "${ReportingZoneBucket}"]
+                buckets_to_clean = ["${TokenMapBucket}", "${QuarantineZoneBucket}", "${RawZoneBucket}", "${TransformedZoneBucket}", "${ReportingZoneBucket}"]
                 for bucket_to_clean in buckets_to_clean:
                   bucket = s3.Bucket(bucket_to_clean)                        
                   objects_to_delete = []
