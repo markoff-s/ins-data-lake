@@ -11,7 +11,7 @@ def handler(event, context):
         if event['RequestType'] == 'Delete':
             # if delete, clean up data folders
             print('Cleaning up buckets...')
-            buckets_to_clean = ["${QuarantineZoneBucket}", "${RawZoneBucket}", "${TransformedZoneBucket}", "${ReportingZoneBucket}"]
+            buckets_to_clean = ["${TokenMapBucket}", "${QuarantineZoneBucket}", "${RawZoneBucket}", "${TransformedZoneBucket}", "${ReportingZoneBucket}"]
             for bucket_to_clean in buckets_to_clean:
                 bucket = s3.Bucket(bucket_to_clean)
                 objects_to_delete = []
