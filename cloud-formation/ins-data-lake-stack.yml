@@ -27,7 +27,6 @@ Metadata:
           - NumberOfCoreInstances
           - SubnetID
           - ReleaseLabel
-          - RangerServerName
       - Label:
           default: Taging
         Parameters:
