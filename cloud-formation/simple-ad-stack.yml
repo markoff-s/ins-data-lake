@@ -1,0 +1,48 @@
+Description: CloudFormation template for creating Simple AD Server
+Outputs:
+  SimpleADDomainID:
+    Description: ID of the newly Created SimpleAD
+    Value: !Ref 'InsLakeSimpleAD'
+  SimpleADIPAddress:
+    Description: IP addresses of newly Created SimpleAD
+    Value: !Select
+      - '1'
+      - !GetAtt 'InsLakeSimpleAD.DnsIpAddresses'
+Parameters:
+  DomainName:
+    Default: ins.data.lake
+    Description: DomainName
+    AllowedValues:
+      - ins.data.lake
+    Type: String
+  DomainPassword:
+    Description: DomainPassword
+    Type: String
+  DomainShortName:
+    Default: InsLakeSimpleAD
+    Description: DomainShortName
+    Type: String
+  Subnet1SimpleAD:
+    Description: Subnet ID1 for creating the InsLakeSimpleAD
+    Type: AWS::EC2::Subnet::Id
+  Subnet2SimpleAD:
+    Description: Subnet ID2 for creating the SimpleAD
+    Type: AWS::EC2::Subnet::Id
+  VPC:
+    Description: VPC ID for SimpleAD and EMR Cluster
+    Type: AWS::EC2::VPC::Id
+Resources:
+  InsLakeSimpleAD:
+    Properties:
+      CreateAlias: 'false'
+      Description: Simple AD Directory
+      Name: !Ref 'DomainName'
+      Password: !Ref 'DomainPassword'
+      ShortName: !Ref 'DomainShortName'
+      Size: Small
+      VpcSettings:
+        SubnetIds:
+          - !Ref 'Subnet1SimpleAD'
+          - !Ref 'Subnet2SimpleAD'
+        VpcId: !Ref 'VPC'
+    Type: AWS::DirectoryService::SimpleAD
