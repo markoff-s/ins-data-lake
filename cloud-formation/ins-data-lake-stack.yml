@@ -1170,14 +1170,20 @@ Resources:
         - Name: Hadoop
         - Name: Hive
         - Name: Spark
+        - Name: Hue
+        - Name: ZooKeeper
+        - Name: HBase
+      BootstrapActions:
+        - Name: Download scripts
+          ScriptBootstrapAction:
+            Path: s3://aws-bigdata-blog/artifacts/aws-blog-emr-ranger/scripts/download-scripts.sh
+            Args: 
+            - s3://aws-bigdata-blog/artifacts/aws-blog-emr-ranger
       Configurations:
         - Classification: hive-site
           ConfigurationProperties:
             hive.metastore.client.factory.class: >-
               com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory
-        - Classification: spark
-          ConfigurationProperties:
-            maximizeResourceAllocation: 'true'
         - Classification: spark-hive-site
           ConfigurationProperties:
             hive.metastore.client.factory.class: >-
@@ -1206,21 +1212,45 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: e5c51285-a027-4b45-a3bf-75fcc00ea9f2
-  HudiBootstrapStep:
-    Type: 'AWS::EMR::Step'
+  InstallRangerPolicies:
+    Type: AWS::EMR::Step
     Properties:
-      ActionOnFailure: CANCEL_AND_WAIT
+      ActionOnFailure: CONTINUE
       HadoopJarStep:
         Args:
-          - >-
-            s3://ins-data-lake-public-artifacts/emr-hudi-bootstrap-script/emr-hudi-bootstrap.sh
-        Jar: !Sub >-
-          s3://${AWS::Region}.elasticmapreduce/libs/script-runner/script-runner.jar
-      Name: HudiBootstrap
-      JobFlowId: !Ref EMRCluster
-    Metadata:
-      'AWS::CloudFormation::Designer':
-        id: 54ca08bf-0cdc-4458-bafb-cf88751a2bdb
+          - /mnt/tmp/aws-blog-emr-ranger/scripts/emr-steps/install-hive-hdfs-ranger-policies.sh 
+          - !Ref RangerHostname
+          - s3://aws-bigdata-blog/artifacts/aws-blog-emr-ranger/inputdata
+        Jar: s3://elasticmapreduce/libs/script-runner/script-runner.jar
+        MainClass: ''
+      JobFlowId: !Ref 'EMRCluster'
+      Name: InstallRangerPolicies
+  InstallRangerPlugin:
+    Type: AWS::EMR::Step
+    Properties:
+      ActionOnFailure: CONTINUE
+      HadoopJarStep:
+        Args:
+          - /mnt/tmp/aws-blog-emr-ranger/scripts/emr-steps/install-hive-hdfs-ranger-plugin.sh
+          - !Ref RangerHostname
+          - !Ref rangerVersion
+          - s3://aws-bigdata-blog/artifacts/aws-blog-emr-ranger
+        Jar: s3://elasticmapreduce/libs/script-runner/script-runner.jar
+        MainClass: ''
+      JobFlowId: !Ref 'EMRCluster'
+      Name: InstallRangerPlugin
+  AtlasBootstrapStep:
+    Type: 'AWS::EMR::Step'
+    Properties:
+      ActionOnFailure: CONTINUE
+      HadoopJarStep:
+        Args:
+          - s3://atlas-emr-scripts/run-atlas-emr-step.sh
+        Jar: s3://elasticmapreduce/libs/script-runner/script-runner.jar
+      JobFlowId: !Ref 'EMRCluster'
+      Name: AtlasBootstrap
+  
+
   EMRClusterServiceRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -1595,6 +1625,28 @@ Resources:
         - - !Ref MainTag
           - S3Crawler
           - reporting
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: f90d8824-df92-460d-a22c-571ac0481232
+  GlueCrawlerTransformed:
+    Type: 'AWS::Glue::Crawler'
+    Properties:
+      Role: !GetAtt 
+        - GlueCrawlerRole
+        - Arn
+      Description: Silver zone crawler
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: DEPRECATE_IN_DATABASE
+      DatabaseName: !Ref GlueTransformedDatabase
+      Targets:
+        S3Targets:
+          - Path: !Sub '${TransformedZoneBucket}/hudi_submissions'
+      Name: !Join 
+        - _
+        - - !Ref MainTag
+          - S3Crawler
+          - transformed
     Metadata:
       'AWS::CloudFormation::Designer':
         id: f90d8824-df92-460d-a22c-571ac0481232
@@ -2267,34 +2319,39 @@ Parameters:
     MinLength: 3
     MaxLength: 50
     AllowedPattern: '^([a-zA-Z-]+){3,50}$'
+    Default: ins-data-lake-quarantine-zone
   RawZoneBucketName:
     Type: String
     Description: Raw zone bucket name
     MinLength: 3
     MaxLength: 50
     AllowedPattern: '^([a-zA-Z-]+){3,50}$'
+    Default: ins-data-lake-bronze-zone
   TokenMapBucketName:
     Type: String
     Description: Token map bucket name
     MinLength: 3
     MaxLength: 50
     AllowedPattern: '^([a-zA-Z-]+){3,50}$'
+    Default: ins-data-lake-token-map
   TransformedZoneBucketName:
     Type: String
     Description: Transformed zone bucket name
     MinLength: 3
     MaxLength: 50
     AllowedPattern: '^([a-zA-Z-]+){3,50}$'
+    Default: ins-data-lake-silver-zone
   ReportingZoneBucketName:
     Type: String
     Description: Reporting zone bucket name
     MinLength: 3
     MaxLength: 50
     AllowedPattern: '^([a-zA-Z-]+){3,50}$'
+    Default: ins-data-lake-gold-zone
   EMRClusterName:
     Description: Name of the cluster
     Type: String
-    Default: data_lake_emr
+    Default: data_lake_emr_atlas_ranger
     MinLength: 3
     MaxLength: 50
     AllowedPattern: '^([a-zA-Z-_]+){3,50}$'
@@ -2357,3 +2414,15 @@ Parameters:
     Type: String
     MinLength: 1
     MaxLength: 30
+  RangerHostname:
+    Description: Internal IP address of the Ranger Server
+    Type: String
+  rangerVersion:
+    Default: '2.0'
+    Description: Version of the Ranger Server.
+    Type: String
+    AllowedValues:
+      - '0.6'
+      - '0.7'
+      - '1.0'
+      - '2.0'
