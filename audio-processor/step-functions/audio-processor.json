@@ -1,0 +1,88 @@
+{
+  "Comment": "Audio files processor",
+  "StartAt": "Submit transcription task",
+  "States": {
+    "Submit transcription task": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:504362274330:function:submit_transcribe_task",
+      "Next": "Pooling delay"
+    },
+    "Pooling delay": {
+      "Type": "Wait",
+      "Seconds": 20,
+      "Next": "Check transcription task status"
+    },
+    "Check transcription task status": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:504362274330:function:get_transcribe_job_status",
+      "Next": "Status router"
+    },
+    "Status router": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Status",
+          "StringEquals": "COMPLETED",
+          "Next": "Generate text result"
+        },
+        {
+          "Variable": "$.Status",
+          "StringEquals": "FAILED",
+          "Next": "Generate text result"
+        },
+        {
+          "Variable": "$.Status",
+          "StringEquals": "QUEUED",
+          "Next": "Pooling delay"
+        },
+        {
+          "Variable": "$.Status",
+          "StringEquals": "IN_PROGRESS",
+          "Next": "Pooling delay"
+        }
+      ],
+      "Default": "Generate text result"
+    },
+    "Generate text result": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:504362274330:function:generate_transcribe_job_result",
+      "Next": "Comprehend analysis"
+    },
+    "Comprehend analysis": {
+      "Type": "Parallel",
+      "End": true,
+      "Branches": [
+        {
+          "StartAt": "Sentiment",
+          "States": {
+            "Sentiment": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:us-east-1:504362274330:function:get_sentiment",
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Key phrases",
+          "States": {
+            "Key phrases": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:us-east-1:504362274330:function:get_key_phrases",
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Entities",
+          "States": {
+            "Entities": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:us-east-1:504362274330:function:get_entities",
+              "End": true
+            }
+          }
+        }
+      ]
+    }
+  }
+}

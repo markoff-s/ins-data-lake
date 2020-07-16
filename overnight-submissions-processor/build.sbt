@@ -16,7 +16,7 @@ libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.4.4"
 //libraryDependencies += "org.apache.hudi" %% "hudi-spark-bundle" % "0.5.1-incubating"
 
 // https://mvnrepository.com/artifact/org.apache.hudi/hudi-spark-bundle
-libraryDependencies += "org.apache.hudi" % "hudi-spark-bundle" % "0.5.0-incubating"
+libraryDependencies += "org.apache.hudi" %% "hudi-spark-bundle" % "0.5.2-incubating"
 
 // https://mvnrepository.com/artifact/org.apache.spark/spark-avro
 libraryDependencies += "org.apache.spark" %% "spark-avro" % "2.4.4"

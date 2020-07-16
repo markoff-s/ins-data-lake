@@ -1,0 +1,378 @@
+AWSTemplateFormatVersion: 2010-09-09
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Audio Processor Configuration
+        Parameters:
+          - BronseBucketName
+          - SilverBucketName
+          - GoldBucketName
+      - Label:
+          default: Intermediate (Transcribe and Comprehend) result folders
+        Parameters:
+          - TranscribeRootFolderName
+          - ComprehendRootFolderName
+      - Label:
+          default: Taging
+        Parameters:
+          - MainTag
+Resources:
+  AllowBronseBucketInvokeAudioProcessorPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt 
+        - AudioProcessorInvoker
+        - Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref 'AWS::AccountId'
+      SourceArn: !Sub 'arn:aws:s3:::${BronseBucketName}'
+  LambdaStepFunctionsInvokerRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/CloudWatchFullAccess'
+        - 'arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess'
+        - 'arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess'
+  StepFunctionExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - states.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaRole'
+  TranscribeLambdaProcessRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AWSLambdaExecute'
+        - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
+        - 'arn:aws:iam::aws:policy/AmazonTranscribeFullAccess'
+  ComprehendLambdaProcessRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AWSLambdaExecute'
+        - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
+        - 'arn:aws:iam::aws:policy/ComprehendFullAccess'
+  BronseBucket:
+    Type: 'AWS::S3::Bucket'
+    DependsOn:
+      - AllowBronseBucketInvokeAudioProcessorPermission
+    Properties:
+      BucketName: !Ref BronseBucketName
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: 's3:ObjectCreated:*'
+            Function: !GetAtt 
+              - AudioProcessorInvoker
+              - Arn
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: .json
+  SilverBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref SilverBucketName
+  GoldBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref GoldBucketName
+  AudioProcessorInvoker:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: audio_processor_invoker
+      Code:
+        S3Bucket: da-aws-ins-data-lake-public-artifacts
+        S3Key: lambdas/audio_processor_invoker.zip
+      Description: Audio processor invoker trigger
+      Handler: audio_processor_invoker.lambda_handler
+      Role: !GetAtt 
+        - LambdaStepFunctionsInvokerRole
+        - Arn
+      Runtime: python3.8
+      Environment:
+        Variables:
+          STEP_FUNCTION_ARN: !Ref AudioProcessorStepFunction
+  SubmitTranscribeTask:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: submit_transcribe_task
+      Code:
+        S3Bucket: da-aws-ins-data-lake-public-artifacts
+        S3Key: lambdas/submit_transcribe_task.zip
+      Description: Submit transcribe task method
+      Handler: submit_transcribe_task.lambda_handler
+      Timeout: 60
+      Role: !GetAtt 
+        - TranscribeLambdaProcessRole
+        - Arn
+      Runtime: python3.8
+  GetTranscribeJobStatus:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: get_transcribe_job_status
+      Code:
+        S3Bucket: da-aws-ins-data-lake-public-artifacts
+        S3Key: lambdas/get_transcribe_job_status.zip
+      Description: Audio processor invoker trigger
+      Handler: get_transcribe_job_status.lambda_handler
+      Timeout: 60
+      Role: !GetAtt 
+        - TranscribeLambdaProcessRole
+        - Arn
+      Runtime: python3.8
+  GenerateTranscribeJobResults:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: generate_transcribe_job_result
+      Code:
+        S3Bucket: da-aws-ins-data-lake-public-artifacts
+        S3Key: lambdas/generate_transcribe_job_result.zip
+      Description: generate_transcribe_job_result
+      Handler: generate_transcribe_job_result.lambda_handler
+      Timeout: 300
+      Role: !GetAtt 
+        - TranscribeLambdaProcessRole
+        - Arn
+      Runtime: python3.8
+      Environment:
+        Variables:
+          SILVER_BUCKET: !Ref SilverBucketName
+          TRANSCRIBE_ROOT_FOLDER: !Ref TranscribeRootFolderName
+  GetSentiment:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: get_sentiment
+      Code:
+        S3Bucket: da-aws-ins-data-lake-public-artifacts
+        S3Key: lambdas/get_sentiment.zip
+      Description: get_sentiment
+      Handler: get_sentiment.lambda_handler
+      Timeout: 3
+      Role: !GetAtt 
+        - ComprehendLambdaProcessRole
+        - Arn
+      Runtime: python3.8
+      Environment:
+        Variables:
+          COMPREHEND_OUTPUT: !Ref ComprehendRootFolderName
+          GOLD_ZONE_BUCKET: !Ref GoldBucketName
+  GetEntities:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: get_entities
+      Code:
+        S3Bucket: da-aws-ins-data-lake-public-artifacts
+        S3Key: lambdas/get_entities.zip
+      Description: get_entities
+      Handler: get_entities.lambda_handler
+      Timeout: 3
+      Role: !GetAtt 
+        - ComprehendLambdaProcessRole
+        - Arn
+      Runtime: python3.8
+      Environment:
+        Variables:
+          COMPREHEND_OUTPUT: !Ref ComprehendRootFolderName
+          GOLD_ZONE_BUCKET: !Ref GoldBucketName
+  GetKeyPhrases:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: get_key_phrases
+      Code:
+        S3Bucket: da-aws-ins-data-lake-public-artifacts
+        S3Key: lambdas/get_key_phrases.zip
+      Description: get_key_phrases
+      Handler: get_key_phrases.lambda_handler
+      Timeout: 3
+      Role: !GetAtt 
+        - ComprehendLambdaProcessRole
+        - Arn
+      Runtime: python3.8
+      Environment:
+        Variables:
+          COMPREHEND_OUTPUT: !Ref ComprehendRootFolderName
+          GOLD_ZONE_BUCKET: !Ref GoldBucketName
+  AudioProcessorStepFunction:
+    Type: 'AWS::StepFunctions::StateMachine'
+    Properties:
+      DefinitionString:  |-
+        {
+          "Comment": "Audio files processor",
+          "StartAt": "Submit transcription task",
+          "States": {
+            "Submit transcription task": {
+              "Type": "Task",
+              "Resource": "${SubmitTranscribeTaskArn}",
+              "Next": "Pooling delay"
+            },
+            "Pooling delay": {
+              "Type": "Wait",
+              "Seconds": 20,
+              "Next": "Check transcription task status"
+            },
+            "Check transcription task status": {
+              "Type": "Task",
+              "Resource": "${GetTranscribeJobStatusArn}",
+              "Next": "Status router"
+            },
+            "Status router": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.Status",
+                  "StringEquals": "COMPLETED",
+                  "Next": "Generate text result"
+                },
+                {
+                  "Variable": "$.Status",
+                  "StringEquals": "FAILED",
+                  "Next": "Generate text result"
+                },
+                {
+                  "Variable": "$.Status",
+                  "StringEquals": "QUEUED",
+                  "Next": "Pooling delay"
+                },
+                {
+                  "Variable": "$.Status",
+                  "StringEquals": "IN_PROGRESS",
+                  "Next": "Pooling delay"
+                }
+              ],
+              "Default": "Generate text result"
+            },
+            "Generate text result": {
+              "Type": "Task",
+              "Resource": "${GenerateTranscribeJobResultsArn}",
+              "Next": "Comprehend analysis"
+            },
+            "Comprehend analysis": {
+              "Type": "Parallel",
+              "End": true,
+              "Branches": [
+                {
+                  "StartAt": "Sentiment",
+                  "States": {
+                    "Sentiment": {
+                      "Type": "Task",
+                      "Resource": "${GetSentimentArn}",
+                      "End": true
+                    }
+                  }
+                },
+                {
+                  "StartAt": "Key phrases",
+                  "States": {
+                    "Key phrases": {
+                      "Type": "Task",
+                      "Resource": "${GetKeyPhrasesArn}",
+                      "End": true
+                    }
+                  }
+                },
+                {
+                  "StartAt": "Entities",
+                  "States": {
+                    "Entities": {
+                      "Type": "Task",
+                      "Resource": "${GetEntitiesArn}",
+                      "End": true
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      DefinitionSubstitutions:
+        SubmitTranscribeTaskArn: !GetAtt [ SubmitTranscribeTask, Arn ]
+        GetTranscribeJobStatusArn: !GetAtt [ GetTranscribeJobStatus, Arn ]
+        GenerateTranscribeJobResultsArn: !GetAtt [ GenerateTranscribeJobResults, Arn ]
+        GetSentimentArn: !GetAtt [ GetSentiment, Arn ]
+        GetKeyPhrasesArn: !GetAtt [ GetKeyPhrases, Arn ]
+        GetEntitiesArn: !GetAtt [ GetEntities, Arn ]
+      RoleArn: !GetAtt 
+        - StepFunctionExecutionRole
+        - Arn
+Parameters:
+  MainTag:
+    ConstraintDescription: Must be a string of upper\lower case letters only
+    Description: This tag will be used widely across all infrastructure
+    Type: String
+    Default: data_lake_audio
+    MinLength: 3
+    MaxLength: 20
+    AllowedPattern: '^([a-zA-Z_]+){3,10}$'
+  BronseBucketName:
+    Type: String
+    Description: Incoming audio bucket name
+    MinLength: 3
+    MaxLength: 50
+    AllowedPattern: '^([a-zA-Z-]+){3,50}$'
+  SilverBucketName:
+    Type: String
+    Description: Raw Transcribe and Comprehend results bucket name
+    MinLength: 3
+    MaxLength: 50
+    AllowedPattern: '^([a-zA-Z-]+){3,50}$'
+  GoldBucketName:
+    Type: String
+    Description: Audio analysis output bucket name
+    MinLength: 3
+    MaxLength: 50
+    AllowedPattern: '^([a-zA-Z-]+){3,50}$'
+  TranscribeRootFolderName:
+    Type: String
+    Description: Root folder for Transcribe results
+    MinLength: 3
+    MaxLength: 20
+    AllowedPattern: '^([a-zA-Z-]+){3,20}$'
+  ComprehendRootFolderName:
+    Type: String
+    Description: Root folder for Comprehend results
+    MinLength: 3
+    MaxLength: 20
+    AllowedPattern: '^([a-zA-Z-]+){3,20}$'
