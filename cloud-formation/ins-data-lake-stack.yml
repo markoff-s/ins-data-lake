@@ -706,11 +706,24 @@ Resources:
         id: bc244592-5c6c-430c-8386-3ff5addc87fe
   ReportingZoneBucket:
     Type: 'AWS::S3::Bucket'
+    DependsOn: BucketPermission
     Properties:
       BucketName: !Ref ReportingZoneBucketName
+      NotificationConfiguration:
+        LambdaConfigurations:
+        - Event: 's3:ObjectCreated:*'
+          Function: !GetAtt GlueCrowlerTriggerLambda.Arn
     Metadata:
       'AWS::CloudFormation::Designer':
-        id: 61894fcf-e759-40ce-97cc-658d8bd35a9e
+        id: 61894fcf-e759-40ce-97cc-658d8bd35a9e 
+  BucketPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref GlueCrowlerTriggerLambda
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref "AWS::AccountId"
+      SourceArn: !Sub "arn:aws:s3:::${ReportingZoneBucketName}"
   SubmissionsProcessingFlowTriggerRole:
     Type: 'AWS::IAM::Role'
     DependsOn: SubmissionsProcessingFlowTriggerManagedPolicy
@@ -1173,12 +1186,12 @@ Resources:
         - Name: Hue
         - Name: ZooKeeper
         - Name: HBase
-      BootstrapActions:
-        - Name: Download scripts
-          ScriptBootstrapAction:
-            Path: s3://aws-bigdata-blog/artifacts/aws-blog-emr-ranger/scripts/download-scripts.sh
-            Args: 
-            - s3://aws-bigdata-blog/artifacts/aws-blog-emr-ranger
+ #     BootstrapActions:
+ #       - Name: Download scripts
+ #         ScriptBootstrapAction:
+ #           Path: s3://aws-bigdata-blog/artifacts/aws-blog-emr-ranger/scripts/download-scripts.sh
+ #           Args: 
+ #           - s3://aws-bigdata-blog/artifacts/aws-blog-emr-ranger
       Configurations:
         - Classification: hive-site
           ConfigurationProperties:
@@ -1212,33 +1225,33 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: e5c51285-a027-4b45-a3bf-75fcc00ea9f2
-  InstallRangerPolicies:
-    Type: AWS::EMR::Step
-    Properties:
-      ActionOnFailure: CONTINUE
-      HadoopJarStep:
-        Args:
-          - /mnt/tmp/aws-blog-emr-ranger/scripts/emr-steps/install-hive-hdfs-ranger-policies.sh 
-          - !Ref RangerHostname
-          - s3://aws-bigdata-blog/artifacts/aws-blog-emr-ranger/inputdata
-        Jar: s3://elasticmapreduce/libs/script-runner/script-runner.jar
-        MainClass: ''
-      JobFlowId: !Ref 'EMRCluster'
-      Name: InstallRangerPolicies
-  InstallRangerPlugin:
-    Type: AWS::EMR::Step
-    Properties:
-      ActionOnFailure: CONTINUE
-      HadoopJarStep:
-        Args:
-          - /mnt/tmp/aws-blog-emr-ranger/scripts/emr-steps/install-hive-hdfs-ranger-plugin.sh
-          - !Ref RangerHostname
-          - !Ref rangerVersion
-          - s3://aws-bigdata-blog/artifacts/aws-blog-emr-ranger
-        Jar: s3://elasticmapreduce/libs/script-runner/script-runner.jar
-        MainClass: ''
-      JobFlowId: !Ref 'EMRCluster'
-      Name: InstallRangerPlugin
+ # InstallRangerPolicies:
+ #   Type: AWS::EMR::Step
+ #   Properties:
+ #     ActionOnFailure: CONTINUE
+ #     HadoopJarStep:
+ #       Args:
+ #         - /mnt/tmp/aws-blog-emr-ranger/scripts/emr-steps/install-hive-hdfs-ranger-policies.sh 
+ #         - !Ref RangerHostname
+ #         - s3://aws-bigdata-blog/artifacts/aws-blog-emr-ranger/inputdata
+ #       Jar: s3://elasticmapreduce/libs/script-runner/script-runner.jar
+ #       MainClass: ''
+ #     JobFlowId: !Ref 'EMRCluster'
+ #     Name: InstallRangerPolicies
+ # InstallRangerPlugin:
+ #   Type: AWS::EMR::Step
+ #   Properties:
+ #     ActionOnFailure: CONTINUE
+ #     HadoopJarStep:
+ #       Args:
+ #         - /mnt/tmp/aws-blog-emr-ranger/scripts/emr-steps/install-hive-hdfs-ranger-plugin.sh
+ #         - !Ref RangerHostname
+ #         - !Ref rangerVersion
+ #         - s3://aws-bigdata-blog/artifacts/aws-blog-emr-ranger
+ #       Jar: s3://elasticmapreduce/libs/script-runner/script-runner.jar
+ #       MainClass: ''
+ #     JobFlowId: !Ref 'EMRCluster'
+ #     Name: InstallRangerPlugin
   AtlasBootstrapStep:
     Type: 'AWS::EMR::Step'
     Properties:
@@ -1269,6 +1282,77 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: ff9134ad-5b6b-4427-af89-05b93e6301af
+  GlueLambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Policies:
+        - PolicyName: LambdaExecutionRole
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: gluePermissions
+                Effect: Allow
+                Action:
+                  - 'glue:CreateJob'
+                  - 'glue:CreateTable'
+                  - 'glue:StartCrawler'
+                  - 'glue:CreateDatabase'
+                  - 'glue:StartJobRun'
+                  - 'glue:StopCrawler'
+                  - 'glue:CreatePartition'
+                  - 'glue:GetJob'
+                  - 'glue:StartTrigger'
+                  - 'glue:CreateCrawler'
+                Resource: '*'
+              - Sid: writelogs
+                Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: 'arn:aws:logs:*:*:*'
+  GlueCrowlerTriggerLambda:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        ZipFile: !Sub |
+          import json
+          import boto3
+          print('Loading function')
+          glue = boto3.client(service_name='glue', region_name='us-east-1',
+                        endpoint_url='https://glue.us-east-1.amazonaws.com')
+          def lambda_handler(event, context):
+              #print("Received event: " + json.dumps(event, indent=2))
+              try:
+                glue.start_crawler(Name='data_lake_S3Crawler_raw_intraday')
+                glue.start_crawler(Name='data_lake_S3Crawler_raw_overnight')
+                glue.start_crawler(Name='data_lake_S3Crawler_reporting')
+                glue.start_crawler(Name='data_lake_S3Crawler_token_map')
+               glue.start_crawler(Name='data_lake_S3Crawler_transformed')
+             except Exception as e:
+                  print(e)
+                  print('Error starting crawler')
+                  raise e
+      Description: Glue Crawlers trigger Lambda Function
+      Handler: index.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt 
+        - GlueLambdaExecutionRole
+        - Arn
+      Runtime: python3.7
+      Timeout: 300
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 0f79041e-1d2c-4885-b0a7-24e8362fc719
   EMRClusterinstanceProfileRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -1416,6 +1500,27 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 606f1782-59ff-48e7-aaf9-6222456684b1
+  #TransformedSubmissionsHudiGlueTable:
+  #  Type: 'AWS::Glue::Table'
+  #  Properties:
+  #    CatalogId: !Ref 'AWS::AccountId'
+  #    DatabaseName: !Ref GlueTransformedDatabase
+  #    TableInput:
+  #      Name: hudi_submissions
+  #      TableType: EXTERNAL_TABLE
+  #      Parameters:
+  #        classification: ''
+  #      StorageDescriptor:
+  #        OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormatt
+  #        InputFormat: org.apache.hudi.hadoop.HoodieParquetInputFormat
+  #        Location: !Sub 's3://${TransformedZoneBucket}/hudi_submissions/'
+  #        SerdeInfo:
+  #          Parameters:
+  #            serialization.format: 1
+  #          SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+  #  Metadata:
+  #    'AWS::CloudFormation::Designer':
+  #      id: 725af63c-6e47-4e55-9685-a1dd633c3410
   GlueReportingDatabase:
     Type: 'AWS::Glue::Database'
     Properties:
@@ -1471,12 +1576,28 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: cfb3235a-d3ba-40d4-86f0-c5652c7f984a
-  TransformedZoneGlueDatabaseLakeFormationPermission:
+  TransformedZoneGlueDatabaseLakeFormationPermissionEMR:
     Type: 'AWS::LakeFormation::Permissions'
     Properties:
       DataLakePrincipal:
         DataLakePrincipalIdentifier: !GetAtt 
           - EMRClusterinstanceProfileRole
+          - Arn
+      Resource:
+        DatabaseResource:
+          Name: !Ref GlueTransformedDatabase
+      Permissions:
+        - CREATE_TABLE
+        - ALTER
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: f57183bc-d4ff-4de6-9f31-91b8d0553141
+  TransformedZoneGlueDatabaseLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - GlueCrawlerRole
           - Arn
       Resource:
         DatabaseResource:
@@ -1787,6 +1908,44 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 3ce6e67d-15ae-4f8c-b036-ca4f6791b501
+#  TransformedZoneGlueCrawlerSubmissionsHudiTableLakeFormationPermission:
+#    Type: 'AWS::LakeFormation::Permissions'
+#    Properties:
+#      DataLakePrincipal:
+#        DataLakePrincipalIdentifier: !GetAtt 
+#          - GlueCrawlerRole
+#          - Arn
+#      Resource:
+#        TableResource:
+#          DatabaseName: !Ref GlueTransformedDatabase
+#          Name: !Ref TransformedSubmissionsHudiGlueTable
+#      Permissions:
+#        - ALTER
+#        - INSERT
+#        - DELETE
+#        - SELECT
+#    Metadata:
+#      'AWS::CloudFormation::Designer':
+#        id: 3ce6e67d-15ae-4f8c-b036-ca4f6791b501
+#  TransformedZoneGlueCrawlerSubmissionsHudiTableLakeFormationPermissionEMR:
+#    Type: 'AWS::LakeFormation::Permissions'
+#    Properties:
+#      DataLakePrincipal:
+#        DataLakePrincipalIdentifier: !GetAtt 
+#          - EMRClusterinstanceProfileRole
+#          - Arn
+#      Resource:
+#        TableResource:
+#          DatabaseName: !Ref GlueTransformedDatabase
+#          Name: !Ref TransformedSubmissionsHudiGlueTable
+#      Permissions:
+#        - ALTER
+#        - INSERT
+#        - DELETE
+#        - SELECT
+#    Metadata:
+#      'AWS::CloudFormation::Designer':
+#        id: 3ce6e67d-15ae-4f8c-b036-ca4f6791b501
   DataLakeAdminsGroup:
     Type: 'AWS::IAM::Group'
     Properties:
@@ -2186,6 +2345,21 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: a0c9d446-d774-4536-8a17-cb889de07260
+  #QuickSightServiceTransformedZoneSubmissionsHudiTableLakeFormationPermission:
+  #  Type: 'AWS::LakeFormation::Permissions'
+  #  Properties:
+  #    DataLakePrincipal:
+  #      DataLakePrincipalIdentifier: !Sub >-
+  #        arn:aws:iam::${AWS::AccountId}:role/service-role/aws-quicksight-service-role-v0
+  #    Resource:
+  #      TableResource:
+  #        DatabaseName: !Ref GlueTransformedDatabase
+  #        Name: !Ref TransformedSubmissionsHudiGlueTable
+  #    Permissions:
+  #      - SELECT
+  #  Metadata:
+  #    'AWS::CloudFormation::Designer':
+  #      id: 8d7d455c-ec2d-4f13-b3a4-ead8ad3c43e8
   QuickSightServiceReportingZoneSubmissionsByStateCityZipTableLakeFormationPermission:
     Type: 'AWS::LakeFormation::Permissions'
     Properties:
@@ -2414,15 +2588,15 @@ Parameters:
     Type: String
     MinLength: 1
     MaxLength: 30
-  RangerHostname:
-    Description: Internal IP address of the Ranger Server
-    Type: String
-  rangerVersion:
-    Default: '2.0'
-    Description: Version of the Ranger Server.
-    Type: String
-    AllowedValues:
-      - '0.6'
-      - '0.7'
-      - '1.0'
-      - '2.0'
+  #RangerHostname:
+   # Description: Internal IP address of the Ranger Server
+   # Type: String
+  #rangerVersion:
+  #  Default: '2.0'
+  #  Description: Version of the Ranger Server.
+  #  Type: String
+  #  AllowedValues:
+  #    - '0.6'
+  #    - '0.7'
+  #    - '1.0'
+  #    - '2.0'
