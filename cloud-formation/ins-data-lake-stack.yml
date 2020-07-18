@@ -1252,17 +1252,16 @@ Resources:
  #       MainClass: ''
  #     JobFlowId: !Ref 'EMRCluster'
  #     Name: InstallRangerPlugin
-  AtlasBootstrapStep:
-    Type: 'AWS::EMR::Step'
-    Properties:
-      ActionOnFailure: CONTINUE
-      HadoopJarStep:
-        Args:
-          - s3://atlas-emr-scripts/run-atlas-emr-step.sh
-        Jar: s3://elasticmapreduce/libs/script-runner/script-runner.jar
-      JobFlowId: !Ref 'EMRCluster'
-      Name: AtlasBootstrap
-  
+ # AtlasBootstrapStep:
+ #   Type: 'AWS::EMR::Step'
+ #   Properties:
+ #     ActionOnFailure: CONTINUE
+ #     HadoopJarStep:
+ #       Args:
+ #         - s3://atlas-emr-scripts/run-atlas-emr-step.sh
+ #       Jar: s3://elasticmapreduce/libs/script-runner/script-runner.jar
+ #     JobFlowId: !Ref 'EMRCluster'
+ #     Name: AtlasBootstrap 
 
   EMRClusterServiceRole:
     Type: 'AWS::IAM::Role'
@@ -1343,6 +1342,7 @@ Resources:
               glue.start_crawler(Name='data_lake_S3Crawler_reporting')
               glue.start_crawler(Name='data_lake_S3Crawler_token_map')
               glue.start_crawler(Name='data_lake_S3Crawler_transformed')
+              glue.start_crawler(Name='data_lake_S3Crawler_call_sentiment')
             except Exception as e:
               print(e)
               print('Error starting crawler')
@@ -1506,7 +1506,7 @@ Resources:
       'AWS::CloudFormation::Designer':
         id: 606f1782-59ff-48e7-aaf9-6222456684b1
   #TransformedSubmissionsHudiGlueTable:
-  #  Type: 'AWS::Glue::Table'
+  # Type: 'AWS::Glue::Table'
   #  Properties:
   #    CatalogId: !Ref 'AWS::AccountId'
   #    DatabaseName: !Ref GlueTransformedDatabase
@@ -1519,6 +1519,9 @@ Resources:
   #        OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormatt
   #        InputFormat: org.apache.hudi.hadoop.HoodieParquetInputFormat
   #        Location: !Sub 's3://${TransformedZoneBucket}/hudi_submissions/'
+  #        Columns:
+  #          - Type: int
+  #            Name: submission_id
   #        SerdeInfo:
   #          Parameters:
   #            serialization.format: 1
@@ -1660,6 +1663,12 @@ Resources:
                         - ReportingZoneBucket
                         - Arn
                       - /*
+                  - !Join 
+                    - ''
+                    - - !GetAtt 
+                        - TransformedZoneBucket
+                        - Arn
+                      - /*
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 80fa182b-bf23-4959-9eb3-ecd1ab03f888
@@ -1731,6 +1740,26 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 9d67a746-014d-4aa7-bace-0771facc21f3
+  SentimentGlueTableCrawler:
+    Type: 'AWS::Glue::Crawler'
+    Properties:
+      Role: !GetAtt 
+        - GlueCrawlerRole
+        - Arn
+      Description: Sentiment Table Crawler
+      SchemaChangePolicy:
+        UpdateBehavior: LOG
+        DeleteBehavior: DEPRECATE_IN_DATABASE
+      DatabaseName: !Ref GlueRawDatabase
+      Targets:
+        S3Targets:
+          - Path: !Sub '${RawZoneBucket}/comprehend-output/Sentiment/'
+      Name: !Join 
+        - _
+        - - !Ref MainTag
+          - S3Crawler
+          - call
+          - sentiment
   GlueCrawlerReporting:
     Type: 'AWS::Glue::Crawler'
     Properties:
@@ -1776,6 +1805,55 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: f90d8824-df92-460d-a22c-571ac0481232
+  SentimentGlueTable:
+    Type: 'AWS::Glue::Table'
+    Properties:
+      CatalogId: !Ref 'AWS::AccountId'
+      DatabaseName: !Ref GlueRawDatabase
+      TableInput:
+        Name: sentiment
+        TableType: EXTERNAL_TABLE
+        Parameters:
+          classification: csv
+        StorageDescriptor:
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          Location: !Sub 's3://${RawZoneBucket}/comprehend-output/Sentiment/'
+          # Columns:
+          #  - Type: int
+          #    Name: partition_1
+          SerdeInfo:
+            Parameters:
+              field.delim: ','
+            SerializationLibrary: org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
+  SentimentGlueTableCrawlerLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !GetAtt 
+          - GlueCrawlerRole
+          - Arn
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueRawDatabase
+          Name: !Ref SentimentGlueTable
+      Permissions:
+        - ALTER
+        - INSERT
+        - DELETE
+        - SELECT
+  SentimentGlueTableQuickSightServiceLakeFormationPermission:
+    Type: 'AWS::LakeFormation::Permissions'
+    Properties:
+      DataLakePrincipal:
+        DataLakePrincipalIdentifier: !Sub >-
+          arn:aws:iam::${AWS::AccountId}:role/service-role/aws-quicksight-service-role-v0
+      Resource:
+        TableResource:
+          DatabaseName: !Ref GlueRawDatabase
+          Name: !Ref SentimentGlueTable
+      Permissions:
+        - SELECT
   TokenMapGlueDatabaseLakeFormationPermission:
     Type: 'AWS::LakeFormation::Permissions'
     Properties:
@@ -1913,44 +1991,44 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 3ce6e67d-15ae-4f8c-b036-ca4f6791b501
-#  TransformedZoneGlueCrawlerSubmissionsHudiTableLakeFormationPermission:
-#    Type: 'AWS::LakeFormation::Permissions'
-#    Properties:
-#      DataLakePrincipal:
-#        DataLakePrincipalIdentifier: !GetAtt 
-#          - GlueCrawlerRole
-#          - Arn
-#      Resource:
-#        TableResource:
-#          DatabaseName: !Ref GlueTransformedDatabase
-#          Name: !Ref TransformedSubmissionsHudiGlueTable
-#      Permissions:
-#        - ALTER
-#        - INSERT
-#        - DELETE
-#        - SELECT
-#    Metadata:
-#      'AWS::CloudFormation::Designer':
-#        id: 3ce6e67d-15ae-4f8c-b036-ca4f6791b501
-#  TransformedZoneGlueCrawlerSubmissionsHudiTableLakeFormationPermissionEMR:
-#    Type: 'AWS::LakeFormation::Permissions'
-#    Properties:
-#      DataLakePrincipal:
-#        DataLakePrincipalIdentifier: !GetAtt 
-#          - EMRClusterinstanceProfileRole
-#          - Arn
-#      Resource:
-#        TableResource:
-#          DatabaseName: !Ref GlueTransformedDatabase
-#          Name: !Ref TransformedSubmissionsHudiGlueTable
-#      Permissions:
-#        - ALTER
-#        - INSERT
-#        - DELETE
-#        - SELECT
-#    Metadata:
-#      'AWS::CloudFormation::Designer':
-#        id: 3ce6e67d-15ae-4f8c-b036-ca4f6791b501
+  #TransformedZoneGlueCrawlerSubmissionsHudiTableLakeFormationPermission:
+  #  Type: 'AWS::LakeFormation::Permissions'
+  #  Properties:
+  #    DataLakePrincipal:
+  #      DataLakePrincipalIdentifier: !GetAtt 
+  #        - GlueCrawlerRole
+  #        - Arn
+  #    Resource:
+  #      TableResource:
+  #        DatabaseName: !Ref GlueTransformedDatabase
+  #        Name: !Ref TransformedSubmissionsHudiGlueTable
+  #    Permissions:
+  #      - ALTER
+  #      - INSERT
+  #      - DELETE
+  #      - SELECT
+  # Metadata:
+  #    'AWS::CloudFormation::Designer':
+  #      id: 3ce6e67d-15ae-4f8c-b036-ca4f6791b501
+  #TransformedZoneGlueCrawlerSubmissionsHudiTableLakeFormationPermissionEMR:
+  #  Type: 'AWS::LakeFormation::Permissions'
+  #  Properties:
+  #    DataLakePrincipal:
+  #      DataLakePrincipalIdentifier: !GetAtt 
+  #        - EMRClusterinstanceProfileRole
+  #       - Arn
+  #    Resource:
+  #      TableResource:
+  #        DatabaseName: !Ref GlueTransformedDatabase
+  #        Name: !Ref TransformedSubmissionsHudiGlueTable
+  #    Permissions:
+  #      - ALTER
+  #      - INSERT
+  #      - DELETE
+  #      - SELECT
+  #  Metadata:
+  #    'AWS::CloudFormation::Designer':
+  #      id: 3ce6e67d-15ae-4f8c-b036-ca4f6791b501
   DataLakeAdminsGroup:
     Type: 'AWS::IAM::Group'
     Properties:

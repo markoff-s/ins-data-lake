@@ -5,9 +5,8 @@ Metadata:
       - Label:
           default: Audio Processor Configuration
         Parameters:
-          - BronseBucketName
-          - SilverBucketName
-          - GoldBucketName
+          - AudioSourceBucketName
+          - AudioAnalyticsOutputBucketName
       - Label:
           default: Intermediate (Transcribe and Comprehend) result folders
         Parameters:
@@ -18,7 +17,7 @@ Metadata:
         Parameters:
           - MainTag
 Resources:
-  AllowBronseBucketInvokeAudioProcessorPermission:
+  AllowAudioSourceBucketInvokeAudioProcessorPermission:
     Type: 'AWS::Lambda::Permission'
     Properties:
       FunctionName: !GetAtt 
@@ -27,7 +26,7 @@ Resources:
       Action: 'lambda:InvokeFunction'
       Principal: s3.amazonaws.com
       SourceAccount: !Ref 'AWS::AccountId'
-      SourceArn: !Sub 'arn:aws:s3:::${BronseBucketName}'
+      SourceArn: !Sub 'arn:aws:s3:::${AudioSourceBucketName}'
   LambdaStepFunctionsInvokerRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -94,12 +93,12 @@ Resources:
         - 'arn:aws:iam::aws:policy/AWSLambdaExecute'
         - 'arn:aws:iam::aws:policy/AmazonS3FullAccess'
         - 'arn:aws:iam::aws:policy/ComprehendFullAccess'
-  BronseBucket:
+  AudioSourceBucket:
     Type: 'AWS::S3::Bucket'
     DependsOn:
-      - AllowBronseBucketInvokeAudioProcessorPermission
+      - AllowAudioSourceBucketInvokeAudioProcessorPermission
     Properties:
-      BucketName: !Ref BronseBucketName
+      BucketName: !Ref AudioSourceBucketName
       NotificationConfiguration:
         LambdaConfigurations:
           - Event: 's3:ObjectCreated:*'
@@ -111,14 +110,6 @@ Resources:
                 Rules:
                   - Name: suffix
                     Value: .json
-  SilverBucket:
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: !Ref SilverBucketName
-  GoldBucket:
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: !Ref GoldBucketName
   AudioProcessorInvoker:
     Type: 'AWS::Lambda::Function'
     Properties:
@@ -179,7 +170,7 @@ Resources:
       Runtime: python3.8
       Environment:
         Variables:
-          SILVER_BUCKET: !Ref SilverBucketName
+          SILVER_BUCKET: !Ref AudioAnalyticsOutputBucketName
           TRANSCRIBE_ROOT_FOLDER: !Ref TranscribeRootFolderName
   GetSentiment:
     Type: 'AWS::Lambda::Function'
@@ -198,7 +189,6 @@ Resources:
       Environment:
         Variables:
           COMPREHEND_OUTPUT: !Ref ComprehendRootFolderName
-          GOLD_ZONE_BUCKET: !Ref GoldBucketName
   GetEntities:
     Type: 'AWS::Lambda::Function'
     Properties:
@@ -216,7 +206,6 @@ Resources:
       Environment:
         Variables:
           COMPREHEND_OUTPUT: !Ref ComprehendRootFolderName
-          GOLD_ZONE_BUCKET: !Ref GoldBucketName
   GetKeyPhrases:
     Type: 'AWS::Lambda::Function'
     Properties:
@@ -234,7 +223,6 @@ Resources:
       Environment:
         Variables:
           COMPREHEND_OUTPUT: !Ref ComprehendRootFolderName
-          GOLD_ZONE_BUCKET: !Ref GoldBucketName
   AudioProcessorStepFunction:
     Type: 'AWS::StepFunctions::StateMachine'
     Properties:
@@ -346,33 +334,31 @@ Parameters:
     MinLength: 3
     MaxLength: 20
     AllowedPattern: '^([a-zA-Z_]+){3,10}$'
-  BronseBucketName:
+  AudioSourceBucketName:
     Type: String
-    Description: Incoming audio bucket name
+    Description: (New) Incoming audio bucket name, will be created by CF stack
     MinLength: 3
     MaxLength: 50
     AllowedPattern: '^([a-zA-Z-]+){3,50}$'
-  SilverBucketName:
+    Default: ins-data-lake-customer-calls
+  AudioAnalyticsOutputBucketName:
     Type: String
-    Description: Raw Transcribe and Comprehend results bucket name
+    Description: (Existing) Raw Transcribe and Comprehend results bucket name
     MinLength: 3
     MaxLength: 50
     AllowedPattern: '^([a-zA-Z-]+){3,50}$'
-  GoldBucketName:
-    Type: String
-    Description: Audio analysis output bucket name
-    MinLength: 3
-    MaxLength: 50
-    AllowedPattern: '^([a-zA-Z-]+){3,50}$'
+    Default: ins-data-lake-bronze-zone
   TranscribeRootFolderName:
     Type: String
-    Description: Root folder for Transcribe results
+    Description: Folder name for Transcribe Results in AudioAnalyticsOutputBucket
     MinLength: 3
     MaxLength: 20
     AllowedPattern: '^([a-zA-Z-]+){3,20}$'
+    Default: transcribe-output
   ComprehendRootFolderName:
     Type: String
-    Description: Root folder for Comprehend results
+    Description: RoFolder name for Comprehend results in AudioAnalyticsOutputBucket
     MinLength: 3
     MaxLength: 20
     AllowedPattern: '^([a-zA-Z-]+){3,20}$'
+    Default: comprehend-output
