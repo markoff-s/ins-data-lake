@@ -2679,7 +2679,5 @@ Parameters:
   #  Description: Version of the Ranger Server.
   #  Type: String
   #  AllowedValues:
-  #    - '0.6'
-  #    - '0.7'
   #    - '1.0'
   #    - '2.0'
