@@ -1222,9 +1222,17 @@ Resources:
       Name: !Ref EMRClusterName
       AutoScalingRole: EMR_AutoScaling_DefaultRole
       ServiceRole: !Ref EMRClusterServiceRole
-    Metadata:
-      'AWS::CloudFormation::Designer':
-        id: e5c51285-a027-4b45-a3bf-75fcc00ea9f2
+  BootstrapSparkXML:
+    Type: AWS::EMR::Step
+    Properties:
+      ActionOnFailure: CANCEL_AND_WAIT
+      HadoopJarStep:
+        Args:
+          - s3://ins-data-lake-public-artifacts/bootstrap-scripts/spark-xml-bootstrap.sh
+        Jar: s3://elasticmapreduce/libs/script-runner/script-runner.jar
+        MainClass: ''
+      JobFlowId: !Ref 'EMRCluster'
+      Name: BootstrapSparkXML
  # InstallRangerPolicies:
  #   Type: AWS::EMR::Step
  #   Properties:
@@ -1262,7 +1270,6 @@ Resources:
  #       Jar: s3://elasticmapreduce/libs/script-runner/script-runner.jar
  #     JobFlowId: !Ref 'EMRCluster'
  #     Name: AtlasBootstrap 
-
   EMRClusterServiceRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -1748,7 +1755,7 @@ Resources:
         - Arn
       Description: Sentiment Table Crawler
       SchemaChangePolicy:
-        UpdateBehavior: LOG
+        UpdateBehavior: UPDATE_IN_DATABASE
         DeleteBehavior: DEPRECATE_IN_DATABASE
       DatabaseName: !Ref GlueRawDatabase
       Targets:
