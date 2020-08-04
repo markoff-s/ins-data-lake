@@ -40,7 +40,7 @@ class OvernightSubmissionsProcessingService {
 
       if (isLocalRun)
         sessionBuilder = sessionBuilder
-          .master("local[*]")
+          .master("local[3]")
           .config("spark.driver.host", "localhost")
 
       spark =  sessionBuilder.getOrCreate()
@@ -56,7 +56,7 @@ class OvernightSubmissionsProcessingService {
         .load(pathToSource)
         .withColumn(hudiTablePrecombineKey, current_timestamp().cast("long"))
         .withColumn(hudiTablePartitionColumn, regexp_replace(to_date(col("submitted_on"), "yyyy-MM-dd"), "-", "/"))
-        .withColumn("underwriter", lit("").cast(StringType))
+//        .withColumn("underwriter", lit("").cast(StringType))
 //        .drop("submitted_on")
       //.cache()
 
