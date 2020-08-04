@@ -21,3 +21,6 @@ libraryDependencies += "org.apache.hudi" %% "hudi-spark-bundle" % "0.5.2-incubat
 // https://mvnrepository.com/artifact/org.apache.spark/spark-avro
 libraryDependencies += "org.apache.spark" %% "spark-avro" % "2.4.4"
 
+// test
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test
+
