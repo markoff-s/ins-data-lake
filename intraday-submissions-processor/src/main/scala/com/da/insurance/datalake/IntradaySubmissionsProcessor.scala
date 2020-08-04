@@ -81,7 +81,7 @@ object IntradaySubmissionsProcessor {
         .withColumn("organization", lit(organization).cast(StringType))
         .withColumn("state", lit(state).cast(StringType))
         .withColumn("street", lit(street).cast(StringType))
-        .withColumn("zip", lit(zip).cast(IntegerType))
+//        .withColumn("zip", lit(zip).cast(IntegerType))
         .withColumn("underwriter", lit(underwriter).cast(StringType))
 
       if (sourceData.columns.contains("YearBuilt")) {
