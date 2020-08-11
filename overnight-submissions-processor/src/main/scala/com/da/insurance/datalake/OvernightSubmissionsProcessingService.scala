@@ -56,10 +56,8 @@ class OvernightSubmissionsProcessingService {
         .load(pathToSource)
         .withColumn(hudiTablePrecombineKey, current_timestamp().cast("long"))
         .withColumn(hudiTablePartitionColumn, regexp_replace(to_date(col("submitted_on"), "yyyy-MM-dd"), "-", "/"))
-//        .withColumn("underwriter", lit("").cast(StringType))
-//        .drop("submitted_on")
-      //.cache()
-
+        .withColumn("underwriter", coalesce(col("underwriter"), lit("").cast(StringType)))
+        
       // clean up col names in case there's something invalid
       val cleanedSourceData = normalizeColumnNames(sourceData)
 
