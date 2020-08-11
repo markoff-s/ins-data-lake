@@ -1035,14 +1035,71 @@ Resources:
       DefinitionString: !Sub |
         {
           "Comment": "Intraday submissions batch proccessing flow",
-          "StartAt": "Prepare Intraday Batch Processing Job Args",
+          "StartAt": "Prepare Tokenizer Batch Processing Job Args",
           "States": {
+            "Prepare Tokenizer Batch Processing Job Args": {
+              "Type": "Pass",
+              "Parameters": {
+                "ArgsForTokenizerBatchProcessingJob": {
+                  "ClusterId.$": "$.ClusterId",
+                  "PathToSourceFile.$": "$.PathToSourceFile",
+                  "PathToRawZoneBucket.$": "$.PathToRawZoneBucket",
+                  "PathToTransformedZoneBucket.$": "$.PathToTransformedZoneBucket",
+                  "PathToTokenMapBucket.$": "$.PathToTokenMapBucket",
+                  "Args": [
+                    {
+                      "Arg1": "spark-submit"
+                    },
+                    {
+                      "Arg2": "--class"
+                    },
+                    {
+                      "Arg3": "com.da.insurance.datalake.security.IntradaySubmissionsTokenizer"
+                    },
+                    {
+                      "Arg4": "s3://ins-data-lake-public-artifacts/jars/intraday-submissions-tokenizer_2.11-0.1.jar"
+                    },
+                    {
+                      "Arg5.$": "$.PathToSourceFile"
+                    },
+                    {
+                      "Arg6.$": "$.PathToRawZoneBucket"
+                    },
+                    {
+                      "Arg7.$": "$.PathToTokenMapBucket"
+                    }
+                  ]
+                }
+              },
+              "Next": "Submit Tokenizer Batch Processing Job"
+            },
+            "Submit Tokenizer Batch Processing Job": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::elasticmapreduce:addStep.sync",
+              "Parameters": {
+                "ClusterId.$": "$.ArgsForTokenizerBatchProcessingJob.ClusterId",
+                "Step": {
+                  "Name": "Tokenizer Batch Processing Job",
+                  "ActionOnFailure": "CONTINUE",
+                  "HadoopJarStep": {
+                    "Jar": "command-runner.jar",
+                    "Args.$": "$.ArgsForTokenizerBatchProcessingJob.Args[*][*]"
+                  }
+                }
+              },
+              "ResultPath": "$.batchStepOutput",
+              "Next": "Prepare Intraday Batch Processing Job Args"
+            },
             "Prepare Intraday Batch Processing Job Args": {
               "Type": "Pass",
               "Comment": "https://stackoverflow.com/questions/59667195/is-there-a-way-to-get-step-functions-input-values-into-emr-step-args",
               "Parameters": {
                 "ArgsForIntradayBatchProcessingJob": {
-                  "ClusterId.$": "$.ClusterId",
+                  "ClusterId.$": "$.ArgsForTokenizerBatchProcessingJob.ClusterId",
+                  "PathToSourceFile.$": "$.ArgsForTokenizerBatchProcessingJob.PathToSourceFile",
+                  "PathToRawZoneBucket.$": "$.ArgsForTokenizerBatchProcessingJob.PathToRawZoneBucket",
+                  "PathToTransformedZoneBucket.$": "$.ArgsForTokenizerBatchProcessingJob.PathToTransformedZoneBucket",
+                  "PathToTokenMapBucket.$": "$.ArgsForTokenizerBatchProcessingJob.PathToTokenMapBucket",
                   "Args": [
                     {
                       "Arg1": "spark-submit"
@@ -1070,15 +1127,15 @@ Resources:
                     },
                     {
                       "Arg9": "com.da.insurance.datalake.IntradaySubmissionsProcessor"
-                    },            
+                    },
                     {
                       "Arg10": "s3://ins-data-lake-public-artifacts/jars/intraday-submissions-processor_2.11-0.1.jar"
                     },
                     {
-                      "Arg11.$": "$.PathToSourceFile"
+                      "Arg11.$": "$.ArgsForTokenizerBatchProcessingJob.PathToRawZoneBucket"
                     },
                     {
-                      "Arg12.$": "$.PathToTransformedZoneBucket"
+                      "Arg12.$": "$.ArgsForTokenizerBatchProcessingJob.PathToTransformedZoneBucket"
                     }
                   ]
                 }
@@ -1108,6 +1165,10 @@ Resources:
               "Parameters": {
                 "ArgsForReportGeneratorJob": {
                   "ClusterId.$": "$.ArgsForIntradayBatchProcessingJob.ClusterId",
+                  "PathToSourceFile.$": "$.ArgsForIntradayBatchProcessingJob.PathToSourceFile",
+                  "PathToRawZoneBucket.$": "$.ArgsForIntradayBatchProcessingJob.PathToRawZoneBucket",
+                  "PathToTransformedZoneBucket.$": "$.ArgsForIntradayBatchProcessingJob.PathToTransformedZoneBucket",
+                  "PathToTokenMapBucket.$": "$.ArgsForIntradayBatchProcessingJob.PathToTokenMapBucket",
                   "Args": [
                     {
                       "Arg1": "spark-submit"

@@ -1,7 +1,7 @@
-package com.da.insurance.datalake
+package com.da.insurance.datalake.security
 
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{SaveMode, SparkSession}
-import org.apache.spark.sql.functions.{col, expr, lit, regexp_replace, to_date, udf}
 
 import scala.util.Try
 
@@ -35,8 +35,11 @@ object IntradaySubmissionsTokenizer {
         .load(pathToSource)
         .withColumn("SubmissionDate", regexp_replace(to_date(col("SubmissionDate"), "MM/dd/yyyy"), "-", "/"))
 
+      /*sourceData.printSchema()
+      sourceData.show()*/
+
       val getMaskedValueUdf = udf(getMaskedValue(_: String, _: Int): String)
-      val sourceDataWithRenamedColumns = sourceData
+      var sourceDataWithRenamedColumns = sourceData
         .withColumnRenamed("SubmissionID", "submission_id")
         .withColumnRenamed("SubmissionStatus", "submission_status")
         .withColumnRenamed("SubmissionDate", "submitted_on")
@@ -46,13 +49,25 @@ object IntradaySubmissionsTokenizer {
         .withColumnRenamed("Street", "street")
         .withColumnRenamed("Zip", "zip")
         .withColumnRenamed("Underwriter", "underwriter")
-        .withColumnRenamed("YearBuilt", "year_built")
-        .withColumnRenamed("BuildingValue", "building_value")
         .withColumn("masked_zip_4_chars", getMaskedValueUdf(col("zip"), lit(4)))
         .withColumn("masked_zip_2_chars", getMaskedValueUdf(col("zip"), lit(2)))
         .withColumn("zip_token", expr("uuid()"))
-      sourceDataWithRenamedColumns.printSchema()
-      sourceDataWithRenamedColumns.show()
+
+      def renameColumnOrAddNew(origName: String, newName: String): Unit = {
+        if (sourceData.columns.contains(origName)) {
+          sourceDataWithRenamedColumns = sourceDataWithRenamedColumns
+            .withColumnRenamed(origName, newName)
+        }
+        else {
+          sourceDataWithRenamedColumns = sourceDataWithRenamedColumns
+            .withColumn(newName, lit(null).cast(org.apache.spark.sql.types.IntegerType))
+        }
+      }
+
+      renameColumnOrAddNew("YearBuilt", "year_built")
+      renameColumnOrAddNew("BuildingValue", "building_value")
+      /*sourceDataWithRenamedColumns.printSchema()
+      sourceDataWithRenamedColumns.show()*/
 
       // save the token map
       sourceDataWithRenamedColumns
@@ -64,10 +79,14 @@ object IntradaySubmissionsTokenizer {
 
       // save masked source data w/o PII data
       sourceDataWithRenamedColumns
-        .drop("zip")
+        //        .drop("zip")
+        .select("submission_id", "submitted_on", "submission_status",
+          "underwriter", "organization", "street", "city", "state", "year_built", "building_value",
+          "masked_zip_4_chars", "masked_zip_2_chars", "zip_token")
         .write
         .format("csv")
         .option("header", "true")
+        .option("emptyValue", "")
         .mode(SaveMode.Append)
         .save(pathToDestination)
     }

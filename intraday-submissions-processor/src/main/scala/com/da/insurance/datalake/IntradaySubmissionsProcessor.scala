@@ -41,21 +41,32 @@ object IntradaySubmissionsProcessor {
           .master("local[*]")
           .config("spark.driver.host", "localhost")
 
-      spark =  sessionBuilder.getOrCreate()
+      spark = sessionBuilder.getOrCreate()
 
       val sourceData = spark
         .read
-        .format("xml")
-        .option("rootTag", "Submission")
-        .option("rowTag", "Submission")
+        .format("csv")
+        .option("header", "true")
+        .option("inferSchema", "true")
         .load(pathToSource)
-        .withColumn("SubmissionDate", regexp_replace(to_date(col("SubmissionDate"), "MM/dd/yyyy"), "-", "/"))
-      //        .cache()
+      /*sourceData.printSchema()
+      sourceData.show()*/
 
       // get source values
       val row = sourceData
-        .select("SubmissionID", "SubmissionStatus", "SubmissionDate", "City", "Company", "State", "Street",
-          "Zip", "Underwriter")
+        .select("submission_id",
+          "submission_status",
+          "submitted_on",
+          "city",
+          "organization",
+          "state",
+          "street",
+          "masked_zip_4_chars",
+          "masked_zip_2_chars",
+          "zip_token",
+          "underwriter",
+          "year_built",
+          "building_value")
         .first()
       val subId = row(0)
       val subStatus = row(1)
@@ -64,8 +75,12 @@ object IntradaySubmissionsProcessor {
       val organization = row(4)
       val state = row(5)
       val street = row(6)
-      val zip = row(7)
-      val underwriter = row(8)
+      val masked_zip_4_chars = row(7)
+      val masked_zip_2_chars = row(8)
+      val zip_token = row(9)
+      val underwriter = row(10)
+      val yearBuilt = row(11)
+      val buildingValue = row(12)
 
       // get existing hudi data
       val hudiDf = spark
@@ -73,7 +88,7 @@ object IntradaySubmissionsProcessor {
         .format("org.apache.hudi")
         .load(pathToDestination + "/*/*/*/*")
 
-      var upsertDf = hudiDf
+      val upsertDf = hudiDf
         .where("submission_id = " + subId)
         .withColumn("submission_status", lit(subStatus).cast(StringType))
         .withColumn("submitted_on", lit(subDate).cast(StringType))
@@ -81,21 +96,16 @@ object IntradaySubmissionsProcessor {
         .withColumn("organization", lit(organization).cast(StringType))
         .withColumn("state", lit(state).cast(StringType))
         .withColumn("street", lit(street).cast(StringType))
-//        .withColumn("zip", lit(zip).cast(IntegerType))
+        .withColumn("masked_zip_4_chars", lit(masked_zip_4_chars).cast(StringType))
+        .withColumn("masked_zip_2_chars", lit(masked_zip_2_chars).cast(StringType))
+        .withColumn("zip_token", lit(zip_token).cast(StringType))
         .withColumn("underwriter", lit(underwriter).cast(StringType))
-
-      if (sourceData.columns.contains("YearBuilt")) {
-        val yearBuilt = sourceData.select("YearBuilt").first()(0)
-        upsertDf = upsertDf.withColumn("year_built", lit(yearBuilt).cast(IntegerType))
-      }
-
-      if (sourceData.columns.contains("BuildingValue")) {
-        val buildingValue = sourceData.select("BuildingValue").first()(0)
-        upsertDf = upsertDf.withColumn("building_value", lit(buildingValue).cast(IntegerType))
-      }
+        .withColumn("year_built", lit(yearBuilt).cast(IntegerType))
+        .withColumn("building_value", lit(buildingValue).cast(IntegerType))
+      upsertDf.printSchema()
+      upsertDf.show()
 
       saveToHudi(upsertDf, pathToDestination)
-
     }
     finally {
       if (spark != null) {
