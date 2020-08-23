@@ -1865,6 +1865,9 @@ Resources:
       Targets:
         S3Targets:
           - Path: !Sub '${TransformedZoneBucket}/hudi_submissions'
+            Exclusions:
+              - '.hoodie/**'
+              - '**/.hoodie*'
       Name: !Join 
         - _
         - - !Ref MainTag
