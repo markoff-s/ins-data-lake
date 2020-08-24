@@ -18,7 +18,7 @@ class OvernightSubmissionsProcessingService {
   val hudiTablePartitionColumn = "submitted_on"
   // if 2 records have same key, the one with bigger precombine key wins
   val hudiTablePrecombineKey = "timestamp"
-  var hudiSyncToHive = true
+//  var hudiSyncToHive = true
 
   def processOvernightData(args: Array[String]): Unit = {
     val pathToSource: String = args(0)
@@ -28,7 +28,7 @@ class OvernightSubmissionsProcessingService {
 
     var isLocalRun: Boolean = false
     if (args.length > 3) isLocalRun = Try(args(3).toBoolean).getOrElse(false)
-    hudiSyncToHive = !isLocalRun
+//    hudiSyncToHive = !isLocalRun
 
     var spark: SparkSession = null
     try {
@@ -115,8 +115,7 @@ class OvernightSubmissionsProcessingService {
       DataSourceWriteOptions.PRECOMBINE_FIELD_OPT_KEY -> hudiTablePrecombineKey,
       DataSourceWriteOptions.PARTITIONPATH_FIELD_OPT_KEY -> hudiTablePartitionColumn,
 
-      //For this data set, we specify that we want to sync metadata with Hive.
-      DataSourceWriteOptions.HIVE_SYNC_ENABLED_OPT_KEY -> hudiSyncToHive.toString,
+      DataSourceWriteOptions.HIVE_SYNC_ENABLED_OPT_KEY -> "false", // hudiSyncToHive.toString,
       DataSourceWriteOptions.HIVE_DATABASE_OPT_KEY -> hudiDbName,
       DataSourceWriteOptions.HIVE_TABLE_OPT_KEY -> hudiTableName,
       DataSourceWriteOptions.HIVE_PARTITION_FIELDS_OPT_KEY -> hudiTablePartitionColumn

@@ -16,7 +16,7 @@ object IntradaySubmissionsProcessor {
   val hudiTableRecordKey = "submission_id"
   val hudiTablePartitionColumn = "submitted_on"
   val hudiTablePrecombineKey = "timestamp"
-  var hudiSyncToHive = true
+//  var hudiSyncToHive = true
 
   def main(args: Array[String]): Unit = {
 
@@ -25,7 +25,7 @@ object IntradaySubmissionsProcessor {
 
     var isLocalRun: Boolean = false
     if (args.length > 2) isLocalRun = Try(args(2).toBoolean).getOrElse(false)
-    hudiSyncToHive = !isLocalRun
+//    hudiSyncToHive = !isLocalRun
 
     var spark: SparkSession = null
     try {
@@ -129,7 +129,7 @@ object IntradaySubmissionsProcessor {
       DataSourceWriteOptions.PARTITIONPATH_FIELD_OPT_KEY -> hudiTablePartitionColumn,
 
       //For this data set, we specify that we want to sync metadata with Hive.
-      DataSourceWriteOptions.HIVE_SYNC_ENABLED_OPT_KEY -> hudiSyncToHive.toString,
+      DataSourceWriteOptions.HIVE_SYNC_ENABLED_OPT_KEY -> "false", // hudiSyncToHive.toString,
       DataSourceWriteOptions.HIVE_DATABASE_OPT_KEY -> hudiDbName,
       DataSourceWriteOptions.HIVE_TABLE_OPT_KEY -> hudiTableName,
       DataSourceWriteOptions.HIVE_PARTITION_FIELDS_OPT_KEY -> hudiTablePartitionColumn
