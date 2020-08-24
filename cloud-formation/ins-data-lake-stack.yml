@@ -1573,30 +1573,27 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 606f1782-59ff-48e7-aaf9-6222456684b1
-  #TransformedSubmissionsHudiGlueTable:
-  # Type: 'AWS::Glue::Table'
-  #  Properties:
-  #    CatalogId: !Ref 'AWS::AccountId'
-  #    DatabaseName: !Ref GlueTransformedDatabase
-  #    TableInput:
-  #      Name: hudi_submissions
-  #      TableType: EXTERNAL_TABLE
-  #      Parameters:
-  #        classification: ''
-  #      StorageDescriptor:
-  #        OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormatt
-  #        InputFormat: org.apache.hudi.hadoop.HoodieParquetInputFormat
-  #        Location: !Sub 's3://${TransformedZoneBucket}/hudi_submissions/'
-  #        Columns:
-  #          - Type: int
-  #            Name: submission_id
-  #        SerdeInfo:
-  #          Parameters:
-  #            serialization.format: 1
-  #          SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
-  #  Metadata:
-  #    'AWS::CloudFormation::Designer':
-  #      id: 725af63c-6e47-4e55-9685-a1dd633c3410
+  TransformedSubmissionsHudiGlueTable:
+    Type: 'AWS::Glue::Table'
+    Properties:
+      CatalogId: !Ref 'AWS::AccountId'
+      DatabaseName: !Ref GlueTransformedDatabase
+      TableInput:
+        Name: hudi_submissions
+        TableType: EXTERNAL_TABLE
+        Parameters:
+          classification: ''
+        StorageDescriptor:
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormatt
+          InputFormat: org.apache.hudi.hadoop.HoodieParquetInputFormat
+          Location: !Sub 's3://${TransformedZoneBucket}/hudi_submissions/'
+          Columns:
+            - Type: int
+              Name: submission_id
+          SerdeInfo:
+            Parameters:
+              serialization.format: 1
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe    
   GlueReportingDatabase:
     Type: 'AWS::Glue::Database'
     Properties:
@@ -2062,44 +2059,38 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 3ce6e67d-15ae-4f8c-b036-ca4f6791b501
-  #TransformedZoneGlueCrawlerSubmissionsHudiTableLakeFormationPermission:
-  #  Type: 'AWS::LakeFormation::Permissions'
-  #  Properties:
-  #    DataLakePrincipal:
-  #      DataLakePrincipalIdentifier: !GetAtt 
-  #        - GlueCrawlerRole
-  #        - Arn
-  #    Resource:
-  #      TableResource:
-  #        DatabaseName: !Ref GlueTransformedDatabase
-  #        Name: !Ref TransformedSubmissionsHudiGlueTable
-  #    Permissions:
-  #      - ALTER
-  #      - INSERT
-  #      - DELETE
-  #      - SELECT
-  # Metadata:
-  #    'AWS::CloudFormation::Designer':
-  #      id: 3ce6e67d-15ae-4f8c-b036-ca4f6791b501
-  #TransformedZoneGlueCrawlerSubmissionsHudiTableLakeFormationPermissionEMR:
-  #  Type: 'AWS::LakeFormation::Permissions'
-  #  Properties:
-  #    DataLakePrincipal:
-  #      DataLakePrincipalIdentifier: !GetAtt 
-  #        - EMRClusterinstanceProfileRole
-  #       - Arn
-  #    Resource:
-  #      TableResource:
-  #        DatabaseName: !Ref GlueTransformedDatabase
-  #        Name: !Ref TransformedSubmissionsHudiGlueTable
-  #    Permissions:
-  #      - ALTER
-  #      - INSERT
-  #      - DELETE
-  #      - SELECT
-  #  Metadata:
-  #    'AWS::CloudFormation::Designer':
-  #      id: 3ce6e67d-15ae-4f8c-b036-ca4f6791b501
+  TransformedZoneGlueCrawlerSubmissionsHudiTableLakeFormationPermission:
+   Type: 'AWS::LakeFormation::Permissions'
+   Properties:
+     DataLakePrincipal:
+       DataLakePrincipalIdentifier: !GetAtt 
+         - GlueCrawlerRole
+         - Arn
+     Resource:
+       TableResource:
+         DatabaseName: !Ref GlueTransformedDatabase
+         Name: !Ref TransformedSubmissionsHudiGlueTable
+     Permissions:
+       - ALTER
+       - INSERT
+       - DELETE
+       - SELECT  
+  TransformedZoneGlueCrawlerSubmissionsHudiTableLakeFormationPermissionEMR:
+   Type: 'AWS::LakeFormation::Permissions'
+   Properties:
+     DataLakePrincipal:
+       DataLakePrincipalIdentifier: !GetAtt 
+         - EMRClusterinstanceProfileRole
+         - Arn
+     Resource:
+       TableResource:
+         DatabaseName: !Ref GlueTransformedDatabase
+         Name: !Ref TransformedSubmissionsHudiGlueTable
+     Permissions:
+       - ALTER
+       - INSERT
+       - DELETE
+       - SELECT   
   DataLakeAdminsGroup:
     Type: 'AWS::IAM::Group'
     Properties:
@@ -2499,21 +2490,18 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: a0c9d446-d774-4536-8a17-cb889de07260
-  #QuickSightServiceTransformedZoneSubmissionsHudiTableLakeFormationPermission:
-  #  Type: 'AWS::LakeFormation::Permissions'
-  #  Properties:
-  #    DataLakePrincipal:
-  #      DataLakePrincipalIdentifier: !Sub >-
-  #        arn:aws:iam::${AWS::AccountId}:role/service-role/aws-quicksight-service-role-v0
-  #    Resource:
-  #      TableResource:
-  #        DatabaseName: !Ref GlueTransformedDatabase
-  #        Name: !Ref TransformedSubmissionsHudiGlueTable
-  #    Permissions:
-  #      - SELECT
-  #  Metadata:
-  #    'AWS::CloudFormation::Designer':
-  #      id: 8d7d455c-ec2d-4f13-b3a4-ead8ad3c43e8
+  QuickSightServiceTransformedZoneSubmissionsHudiTableLakeFormationPermission:
+   Type: 'AWS::LakeFormation::Permissions'
+   Properties:
+     DataLakePrincipal:
+       DataLakePrincipalIdentifier: !Sub >-
+         arn:aws:iam::${AWS::AccountId}:role/service-role/aws-quicksight-service-role-v0
+     Resource:
+       TableResource:
+         DatabaseName: !Ref GlueTransformedDatabase
+         Name: !Ref TransformedSubmissionsHudiGlueTable
+     Permissions:
+       - SELECT   
   QuickSightServiceReportingZoneSubmissionsByStateCityZipTableLakeFormationPermission:
     Type: 'AWS::LakeFormation::Permissions'
     Properties:
