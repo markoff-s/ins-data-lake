@@ -32,7 +32,7 @@ def lambda_handler(event, context):
     tmp_file = '/' + target_file.replace(target_folder, 'tmp/')
         
     print('Temp csv file has been created: {0}'.format(tmp_file))
-    print('Target file is {0}'.format(target_file))
+    print('Target file is {0} in bucket {1}'.format(target_file, bucket))
         
     with open(tmp_file, 'w') as outfile:
         fieldnames = ['speaker_label', 'sentiment', 'positive_score', 'negative_score', 'neutral_score', 'mixed_score']
@@ -45,10 +45,10 @@ def lambda_handler(event, context):
             writer.writerow({
                                 'speaker_label': channel['SpeakerLabel'], 
                                 'sentiment': response['Sentiment'], 
-                                'positive_score': response['SentimentScore']['Positive'], 
-                                'negative_score': response['SentimentScore']['Negative'], 
-                                'neutral_score':  response['SentimentScore']['Neutral'], 
-                                'mixed_score':  response['SentimentScore']['Mixed']
+                                'positive_score': round(response['SentimentScore']['Positive'], 3), 
+                                'negative_score': round(response['SentimentScore']['Negative'], 3), 
+                                'neutral_score':  round(response['SentimentScore']['Neutral'], 3), 
+                                'mixed_score':  round(response['SentimentScore']['Mixed'], 3)
             })
 
     s3.upload_file(tmp_file, bucket, target_file)
